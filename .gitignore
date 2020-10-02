@@ -3,3 +3,4 @@ ca.pem*
 NOTES*
 LOGS*
 /private_keys/*
+!/**/.gitkeep
