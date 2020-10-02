@@ -1,6 +1,6 @@
 ## Simple PoC project that creates three Vault clusters in three different AWS regions.
 
-### TODO
+### TODO :
 
 [x] Install host keys
 [x] Use cloud-init to setup Hashicorp DEB repo 
