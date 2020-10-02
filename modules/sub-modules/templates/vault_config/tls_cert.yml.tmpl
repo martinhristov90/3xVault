@@ -1,0 +1,11 @@
+#cloud-config
+
+write_files:
+  - encoding: b64
+    content: ${vault_tls_cert}
+    path: /etc/vault.d/tls.crt
+    permissions: '0644'
+  - path: /etc/vault.d/tls.key
+    encoding: b64
+    content: ${vault_tls_private_key}
+    permissions: '0600'

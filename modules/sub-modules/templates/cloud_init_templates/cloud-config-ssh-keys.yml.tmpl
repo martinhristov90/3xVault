@@ -1,0 +1,8 @@
+#cloud-config
+
+ssh_keys:
+%{ for key in keys ~}
+  ${key.algorithm}_private: |
+    ${key.private}
+  ${key.algorithm}_public : ${key.public}
+%{ endfor ~}

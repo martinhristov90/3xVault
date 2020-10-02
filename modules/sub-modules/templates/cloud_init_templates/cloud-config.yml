@@ -1,0 +1,30 @@
+#cloud-config
+hostname: ${hostname}
+
+users:
+    - default # Really important, keeps the default ubuntu user with the AWS key_pair
+    - name: vault
+      gecos: service vault user
+      shell: /usr/sbin/nologin
+      system: true
+      lock_passwd: true
+
+# Adding Hashicorp repo
+apt:
+  sources:
+    hashicorp.list:
+      source: "deb [arch=amd64] https://apt.releases.hashicorp.com $RELEASE main"
+      keyid: A3219F7B
+
+# Installing vault enterprise
+packages:
+  - vault-enterprise
+
+package_upgrade: true
+package_update: true
+
+# Adding the new hostname to /etc/hosts
+manage_etc_hosts: true
+fqdn: "${hostname}"
+
+final_message: "The system is finally up, after $UPTIME seconds"

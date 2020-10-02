@@ -1,0 +1,62 @@
+## template: jinja
+#!/usr/bin/env bash
+
+cat << EOF > /etc/vault.d/vault.hcl
+
+# Common parameters
+ui = true
+cluster_name =  "cluster-${region}"
+
+#mlock = true
+#disable_mlock = true
+
+#storage "file" {
+#  path = "/opt/vault/data"
+#}
+
+#Storage Raft stanza
+
+storage "raft" {
+  path = "/opt/vault/data"
+  node_id = "${node_id}"
+}
+
+# For Jinja templates - (dashes) in variable names should be replaced with _ (underscores)
+cluster_addr = "https://{{ds.dynamic.instance_identity.document.privateIp}}:8201"
+api_addr = "http://0.0.0.0:8200"
+
+# HTTP listener
+#listener "tcp" {
+#  address = "127.0.0.1:8200"
+#  tls_disable = 1
+#}
+
+# Temporary listener 
+#listener "tcp" {
+#  address = "0.0.0.0:8200"
+#  tls_disable = 1
+#}
+
+# HTTPS listener
+listener "tcp" {
+  address       = "0.0.0.0:8200"
+  tls_cert_file = "/etc/vault.d/tls.crt"
+  tls_key_file  = "/etc/vault.d/tls.key"
+}
+
+# Example AWS KMS auto unseal
+seal "awskms" {
+  region = "${region}"
+  kms_key_id = "${kms_key_id}"
+}
+
+# Setting log level
+log_level = "${log_level}"
+EOF
+
+sudo chown -R vault:vault /etc/vault.d
+sudo chmod -R 0644 /etc/vault.d/*
+
+cat << EOF > /etc/profile.d/vault.sh
+export VAULT_ADDR=https://127.0.0.1:8200
+EOF
