@@ -1,5 +1,7 @@
 #cloud-config
 
+# Writing Vault tls key and tls cert, they are used for the TCP listener
+
 write_files:
   - encoding: b64
     content: ${vault_tls_cert}

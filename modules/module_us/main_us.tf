@@ -14,6 +14,7 @@ module "vault-cluster-us" {
     vault_common_ca_cert = var.vault_common_ca_cert
     vault_common_ca_private_key = var.vault_common_ca_private_key
 
+    vault_license = var.vault_license
     providers = {
       aws = aws.us-eastern
     }

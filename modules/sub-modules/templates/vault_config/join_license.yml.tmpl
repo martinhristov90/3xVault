@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# No need to write the license to each node, it is stored in the backend storage
+
+# Wait for the Vault server to start
+sleep 20
+
+vault operator raft join https://${join_to}:8200

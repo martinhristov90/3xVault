@@ -1,6 +1,8 @@
 ## template: jinja
 #!/usr/bin/env bash
 
+# Fixing Systemd Unit file because of "Unknown lvalue 'StartLimitIntervalSec' in section 'Unit'"
+
 cat << EOF > /usr/lib/systemd/system/vault.service
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"

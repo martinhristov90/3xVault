@@ -16,9 +16,10 @@ apt:
       source: "deb [arch=amd64] https://apt.releases.hashicorp.com $RELEASE main"
       keyid: A3219F7B
 
-# Installing vault enterprise
+# Installing vault enterprise and jq
 packages:
   - vault-enterprise
+  - jq
 
 package_upgrade: true
 package_update: true

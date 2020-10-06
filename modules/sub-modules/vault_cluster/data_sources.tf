@@ -18,3 +18,10 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 }
+
+# Getting subnets cidr blocks
+data "aws_subnet" "subnets" {
+  for_each = local.availability_zones_sliced # each subnet
+
+  id = aws_subnet.public_subnet[each.key].id
+}

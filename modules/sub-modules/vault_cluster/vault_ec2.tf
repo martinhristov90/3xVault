@@ -1,15 +1,19 @@
 
 # Creating 3 Vault instances in each AZ
 resource "aws_instance" "vault" {
+
+  for_each = local.availability_zones_sliced
+
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
-  for_each      = local.availability_zones_sliced
   subnet_id     = aws_subnet.public_subnet[each.key].id # Subnet for the EC2 
   key_name      = aws_key_pair.vault-ssh-key.key_name   # Waiting on the key to be created first
 
   vpc_security_group_ids      = [aws_security_group.vault.id]
   associate_public_ip_address = true
   ebs_optimized               = false
+  private_ip                  = cidrhost(data.aws_subnet.subnets[each.key].cidr_block, 5) # Giving EC2 the 5th IP of each subnet, the first 4 and the last 4 IPs of each subnet are reserved by AWS
+
   # The intance profile is going to give the EC2 (using meta-data) short-lived STS credentials to access the AWS IAM
   # Credentials are available locally for the EC2 at : http://169.254.169.254/latest/meta-data/iam....
   iam_instance_profile = aws_iam_instance_profile.vault-instance-profile.id

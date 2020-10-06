@@ -7,4 +7,8 @@ locals {
   algorithms = ["RSA", "ECDSA"]
 }
 
+# Getting the first AZ
+locals {
+  first_subnet_host = element(tolist(local.availability_zones_sliced), 0)
+}
 
