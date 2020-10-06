@@ -5,7 +5,7 @@ resource "aws_instance" "vault" {
   for_each = local.availability_zones_sliced
 
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.public_subnet[each.key].id # Subnet for the EC2 
   key_name      = aws_key_pair.vault-ssh-key.key_name   # Waiting on the key to be created first
 

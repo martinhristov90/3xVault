@@ -8,6 +8,7 @@ variable "random_id" {
 }
 
 variable "region" {
+  type = string
   description = "Region where the cluster is deployed"
 }
 

@@ -16,6 +16,9 @@ log_level = "${log_level}"
 storage "raft" {
   path = "/opt/vault/data"
   node_id = "${node_id}"
+  retry_join {
+    leader_api_addr = "https://${join_to}:8200"
+  }
 }
 
 # For Jinja templates - (dashes) in variable names should be replaced with _ (underscores)

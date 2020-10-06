@@ -1,5 +1,5 @@
 provider "aws" {
-  alias  = "us-eastern"
+  alias  = "us-provider"
   region = var.region
 }
 
@@ -7,7 +7,7 @@ module "vault-cluster-us" {
     source = "../sub-modules/vault_cluster"
 
     #Variables
-    vpc_cidr = "192.168.100.0/24"
+    vpc_cidr = var.vpc_cidr
     random_id = var.random_id
     region = var.region
 
@@ -16,6 +16,6 @@ module "vault-cluster-us" {
 
     vault_license = var.vault_license
     providers = {
-      aws = aws.us-eastern
+      aws = aws.us-provider
     }
 }

@@ -24,6 +24,7 @@ data "template_cloudinit_config" "myhost" {
       region     = var.region
       log_level  = var.log_level
       node_id    = "vault-${var.region}-${each.key}-${var.random_id}"
+      join_to = cidrhost(data.aws_subnet.subnets[element(tolist(local.availability_zones_sliced), 0)].cidr_block, 5)
     })
   }
   # Uploading the Vault TLS cert and private key for the listner
@@ -41,14 +42,12 @@ data "template_cloudinit_config" "myhost" {
       vault_common_ca = indent(6, chomp(var.vault_common_ca_cert))
     })
   }
-  # License Vault Enterprise, the file should be located in the main dir named "license_vault.txt". The EC2 located in the first AZ is going to be the leader, the rest are going to join to it. Two type of templates are used depending if the node is active or standby. Only the leader node gets the license, it is stored in the backend storage.
+  # License Vault Enterprise, the file should be located in the main dir named "license_vault.txt". The EC2 located in the first AZ is going to be the leader, the rest are going to join to it.
   part {
     content_type = "text/x-shellscript"
     content = each.key == local.first_subnet_host ? templatefile("${path.module}/../templates/vault_config/init_license.yml.tmpl", {
       vault_license = var.vault_license
-      }) : templatefile("${path.module}/../templates/vault_config/join_license.yml.tmpl", {
-      join_to = cidrhost(data.aws_subnet.subnets[element(tolist(local.availability_zones_sliced), 0)].cidr_block, 5)
-    })
+      }) : file("${path.module}/../templates/vault_config/join_license.yml.tmpl")
   }
   # Provides host keys for the EC2
   part {
