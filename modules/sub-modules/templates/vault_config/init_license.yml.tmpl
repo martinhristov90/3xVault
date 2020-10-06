@@ -10,12 +10,12 @@ sudo chmod -R 0644 /home/ubuntu/_vaultSetup/*
 
 echo "Initializing Vault..."
 # Wait for Vault to start 
-sleep 5
+sleep 1
+
 vault operator init -format=json -recovery-shares=5 -recovery-threshold=3 > /home/ubuntu/_vaultSetup/keys.json
 
 # Wait for Vault to get Initialized with KMS
-
-sleep 12
+sleep 7
 
 ROOT_TOKEN=`jq -r .root_token /home/ubuntu/_vaultSetup/keys.json`
 
@@ -24,6 +24,10 @@ then
     echo "ROOT_TOKEN is empty !!!"
     exit 1
 fi
+
+cat << EOF >> /etc/profile.d/vault.sh
+export VAULT_TOKEN=$ROOT_TOKEN
+EOF
 
 # Creating license.json
 
@@ -42,5 +46,5 @@ else
     echo "Writing license file NOT successful"
 fi
 
-
-echo "THIS IS LEADER " > /tmp/marti.text
+# For debugging
+echo "This is a active node" > /tmp/vault_mode

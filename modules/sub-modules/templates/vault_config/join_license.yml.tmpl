@@ -6,3 +6,5 @@
 sleep 20
 
 vault operator raft join https://${join_to}:8200
+
+echo "This is a follower node" > /tmp/vault_mode

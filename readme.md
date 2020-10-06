@@ -6,10 +6,10 @@
 - [x] Use cloud-init to setup Hashicorp DEB repo 
 - [x] Install Vault from the DEB repo
 - [x] Implement TLS for Vault
-- [ ] Provision Vault
-- [ ] Add Vault Ent license
+- [x] Provision Vault
+- [x] Add Vault Ent license
 - [x] Create Raft storage
-- [ ] Use cloud-init for exchanging CAs
+- [x] Use cloud-init for exchanging CAs
 - [ ] Setup replication
 - [x] Create role for instance profile of EC2
 - [ ] Utilize the instance profile for KMS and AWS auth
