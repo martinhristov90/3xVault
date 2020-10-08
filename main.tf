@@ -39,3 +39,22 @@ module "vault-cluster-ap" {
   vpc_cidr = var.clusters.ap.vpc_cidr
 
 }
+
+module "inter_vpc_peering" {
+  source = "./modules/sub-modules/vpc_peering"
+
+  hq_vault_region = var.clusters.us.region
+  dr_vault_region = var.clusters.eu.region
+  pr_vault_region = var.clusters.ap.region
+
+  random_id = local.random_id
+
+  # Workaround in order `depends_on` to work
+  providers = {
+    aws.hq_provider = aws.hq_provider
+    aws.dr_provider = aws.dr_provider
+    aws.pr_provider = aws.pr_provider
+  }
+
+  depends_on = [module.vault-cluster-ap, module.vault-cluster-eu, module.vault-cluster-us]
+}

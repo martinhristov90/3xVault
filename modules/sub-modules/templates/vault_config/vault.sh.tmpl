@@ -23,7 +23,7 @@ storage "raft" {
 
 # For Jinja templates - (dashes) in variable names should be replaced with _ (underscores)
 cluster_addr = "https://{{ds.dynamic.instance_identity.document.privateIp}}:8201"
-api_addr = "http://0.0.0.0:8200"
+api_addr = "http://{{ds.dynamic.instance_identity.document.privateIp}}:8200"
 
 # HTTPS listener
 listener "tcp" {

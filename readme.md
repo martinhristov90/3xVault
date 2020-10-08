@@ -14,14 +14,17 @@
 - [x] Create role for instance profile of EC2
 - [x] Utilize the instance profile for KMS
 - [ ] Utilize the instance profile for AWS auth
-- [ ] Setup replication
+- [ ] Provide replication instructions
 - [ ] Output IPs of the nodes
 - [ ] Create LB
 - [ ] Isolate the instances and provide Bastion host for accessing them
-- [ ] Create configuration object (custom object) for top-level `main.tf`
+- [x] Create configuration object (custom object) for top-level `main.tf`
 - [ ] Add public DNS to the host keys of the local TF machine
 - [ ] Readme should include instructions on the licensing
 - [ ] Review the raft protocol configuration new version of Vault comes out
+- [x] Do smarter check when licensing
+- [ ] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
+- [ ] Install TF and to some config with TF Vault provider
 
 
 ### Example `terraform.tfvars` :

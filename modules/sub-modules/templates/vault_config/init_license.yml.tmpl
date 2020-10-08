@@ -15,8 +15,7 @@ sleep 1
 vault operator init -format=json -recovery-shares=5 -recovery-threshold=3 > /home/ubuntu/_vaultSetup/keys.json
 
 # Wait for Vault to get Initialized with KMS
-sleep 7
-
+sleep 10
 ROOT_TOKEN=`jq -r .root_token /home/ubuntu/_vaultSetup/keys.json`
 
 if [ -z "$ROOT_TOKEN" ]
@@ -37,14 +36,30 @@ cat << EOF > /home/ubuntu/_vaultSetup/license.json
 }
 EOF
 
-curl -s --request PUT --header "X-Vault-Token: $ROOT_TOKEN" --data @/home/ubuntu/_vaultSetup/license.json https://127.0.0.1:8200/v1/sys/license
+function install_vault_license () {
+  
+curl -s --request PUT --header "X-Vault-Token: $1" --data @/home/ubuntu/_vaultSetup/license.json https://127.0.0.1:8200/v1/sys/license
 
 if [ $? -eq 0 ]
 then 
     rm /home/ubuntu/_vaultSetup/license.json
+     echo "Writing license file IS successful"
 else
     echo "Writing license file NOT successful"
 fi
+}
+
+
+while true 
+do 
+  if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]]
+  then
+    install_vault_license $ROOT_TOKEN
+  else
+    echo "Vault is not ready yet !"
+  sleep 1
+  fi
+done
 
 # For debugging
 echo "This is a active node" > /tmp/vault_mode
