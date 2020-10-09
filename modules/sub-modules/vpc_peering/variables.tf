@@ -1,3 +1,8 @@
+variable "random_id" {
+  type        = string
+  description = "Variable used as unique identifier of the current environment"
+}
+
 variable "clusters" {
   type = map(object({
     region   = string

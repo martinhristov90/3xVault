@@ -6,36 +6,24 @@ cat << EOF > /etc/vault.d/vault.hcl
 # Common parameters
 ui = true
 cluster_name =  "cluster-${region}"
-
 #mlock = true
 #disable_mlock = true
 
-#storage "file" {
-#  path = "/opt/vault/data"
-#}
+# Setting log level
+log_level = "${log_level}"
 
 #Storage Raft stanza
-
 storage "raft" {
   path = "/opt/vault/data"
   node_id = "${node_id}"
+  retry_join {
+    leader_api_addr = "https://${join_to}:8200"
+  }
 }
 
 # For Jinja templates - (dashes) in variable names should be replaced with _ (underscores)
 cluster_addr = "https://{{ds.dynamic.instance_identity.document.privateIp}}:8201"
-api_addr = "http://0.0.0.0:8200"
-
-# HTTP listener
-#listener "tcp" {
-#  address = "127.0.0.1:8200"
-#  tls_disable = 1
-#}
-
-# Temporary listener 
-#listener "tcp" {
-#  address = "0.0.0.0:8200"
-#  tls_disable = 1
-#}
+api_addr = "https://{{ds.dynamic.instance_identity.document.privateIp}}:8200"
 
 # HTTPS listener
 listener "tcp" {
@@ -49,9 +37,6 @@ seal "awskms" {
   region = "${region}"
   kms_key_id = "${kms_key_id}"
 }
-
-# Setting log level
-log_level = "${log_level}"
 EOF
 
 sudo chown -R vault:vault /etc/vault.d

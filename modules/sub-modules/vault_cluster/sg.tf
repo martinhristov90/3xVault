@@ -23,6 +23,32 @@ resource "aws_security_group" "vault" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Vault cluster (node-to-node) traffic 
+
+  ingress {
+    from_port   = 8201
+    to_port     = 8201
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  # All TCP connections are allowed if they are located in the same SG
+  ingress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    self      = true
+  }
+
+  # All ICMP connections are allowed if they are located in the same SG
+  ingress {
+    from_port = 0
+    to_port   = 254
+    protocol  = "icmp"
+    self      = true
+  }
+
   # Leaving traffic
   egress {
     from_port   = 0

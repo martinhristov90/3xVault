@@ -8,6 +8,7 @@ variable "random_id" {
 }
 
 variable "region" {
+  type = string
   description = "Region where the cluster is deployed"
 }
 
@@ -22,4 +23,8 @@ variable "vault_common_ca_cert" {
 
 variable "vault_common_ca_private_key" {
   description = "CA private used to sign Vault server certificates"
+}
+
+variable "vault_license" {
+  description = "Vault license"
 }

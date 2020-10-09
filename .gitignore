@@ -1,6 +1,7 @@
-license*
+license_vault*
 ca.pem*
 NOTES*
 LOGS*
 /private_keys/private*
 !/**/.gitkeep
+trash/

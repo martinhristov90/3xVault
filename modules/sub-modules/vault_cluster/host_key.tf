@@ -1,3 +1,4 @@
+# Generate RSA and EC keys for hostkeys
 resource "tls_private_key" "host" {
   count       = length(local.algorithms)
   algorithm   = local.algorithms[count.index]

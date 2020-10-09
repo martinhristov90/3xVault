@@ -6,3 +6,4 @@ resource "aws_internet_gateway" "gw" {
     Name = "vault-${var.region}-${var.random_id}"
   }
 }
+
