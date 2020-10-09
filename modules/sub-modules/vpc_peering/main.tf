@@ -6,11 +6,11 @@ resource "aws_vpc_peering_connection" "peering_source_to_dr" {
 
   vpc_id      = element(tolist(data.aws_vpcs.vpc_id_hq_region.ids), 0)
   peer_vpc_id = element(tolist(data.aws_vpcs.vpc_id_dr_region.ids), 0)
-  peer_region = var.dr_vault_region
+  peer_region = local.dr_vault_region
   auto_accept = false
 
   tags = {
-    Name = "vault-${var.hq_vault_region}-${var.random_id}"
+    Name = "vault-${local.hq_vault_region}-${var.random_id}"
   }
 }
 
@@ -22,7 +22,7 @@ resource "aws_vpc_peering_connection_accepter" "peer_dr" {
   auto_accept               = true
 
   tags = {
-    Name = "vault-${var.hq_vault_region}-${var.random_id}"
+    Name = "vault-${local.hq_vault_region}-${var.random_id}"
   }
 }
 
@@ -60,11 +60,11 @@ resource "aws_vpc_peering_connection" "peering_source_to_pr" {
 
   vpc_id      = element(tolist(data.aws_vpcs.vpc_id_hq_region.ids), 0)
   peer_vpc_id = element(tolist(data.aws_vpcs.vpc_id_pr_region.ids), 0)
-  peer_region = var.pr_vault_region
+  peer_region = local.pr_vault_region
   auto_accept = false
 
   tags = {
-    Name = "vault-${var.hq_vault_region}-${var.random_id}"
+    Name = "vault-${local.hq_vault_region}-${var.random_id}"
   }
 }
 
@@ -76,7 +76,7 @@ resource "aws_vpc_peering_connection_accepter" "peer_pr" {
   auto_accept               = true
 
   tags = {
-    Name = "vault-${var.hq_vault_region}-${var.random_id}"
+    Name = "vault-${local.hq_vault_region}-${var.random_id}"
   }
 }
 

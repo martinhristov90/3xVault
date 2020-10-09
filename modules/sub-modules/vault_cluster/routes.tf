@@ -7,6 +7,11 @@ resource "aws_route_table" "route" {
     gateway_id = aws_internet_gateway.gw.id
   }
 
+  # Ignoring all the changes in a route table when the VPC module adds new routes for the peering to work
+  lifecycle {
+    ignore_changes = all
+  }
+
   tags = {
     Name = "vault-${var.region}-${var.random_id}"
   }
@@ -18,4 +23,5 @@ resource "aws_route_table_association" "route" {
 
   subnet_id      = aws_subnet.public_subnet[each.key].id
   route_table_id = aws_route_table.route.id
+
 }

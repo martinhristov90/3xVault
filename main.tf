@@ -47,10 +47,7 @@ module "vault-cluster-ap" {
 module "inter_vpc_peering" {
   source = "./modules/sub-modules/vpc_peering"
 
-  hq_vault_region = var.clusters.us.region
-  dr_vault_region = var.clusters.eu.region
-  pr_vault_region = var.clusters.ap.region
-
+  clusters = var.clusters
   random_id = local.random_id
 
   # Workaround in order `depends_on` to work
