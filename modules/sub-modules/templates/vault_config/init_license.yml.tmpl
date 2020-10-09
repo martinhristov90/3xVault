@@ -36,6 +36,7 @@ cat << EOF > /home/ubuntu/_vaultSetup/license.json
 }
 EOF
 
+# Install the Vault license and deletes the license file
 function install_vault_license () {
   
 curl -s --request PUT --header "X-Vault-Token: $1" --data @/home/ubuntu/_vaultSetup/license.json https://127.0.0.1:8200/v1/sys/license
@@ -49,10 +50,10 @@ else
 fi
 }
 
-
+# Check if Vault is ready for being licensed
 while true 
 do 
-  if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]]
+  if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]] # HTTP codes that show if Vault is ready to be used
   then
     install_vault_license $ROOT_TOKEN
   else

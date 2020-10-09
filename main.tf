@@ -1,3 +1,4 @@
+# Creating HQ cluster in US
 module "vault-cluster-us" {
 
   source = "./modules/module_us"
@@ -12,6 +13,7 @@ module "vault-cluster-us" {
 
 }
 
+# Creating DR cluster in Europe
 module "vault-cluster-eu" {
 
   source = "./modules/module_eu"
@@ -26,6 +28,7 @@ module "vault-cluster-eu" {
 
 }
 
+# Creating PR cluster in Asia
 module "vault-cluster-ap" {
 
   source = "./modules/module_ap"
@@ -40,6 +43,7 @@ module "vault-cluster-ap" {
 
 }
 
+# Connecting the clusters together, the DR and PR clusters have no connection.
 module "inter_vpc_peering" {
   source = "./modules/sub-modules/vpc_peering"
 
