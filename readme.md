@@ -23,13 +23,83 @@
   - Clone the repository : `git clone https://github.com/martinhristov90/3xVault.git`.
   - Change into its directory : `cd 3xVault`.
   - Create `terraform.tfvars` file, example of how it should look like can be found below.
-  - Put your Vault enterprise license in a file named `license_vault.txt`.
+  - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
   - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
 
 ### How to enable Vault replication :
 
+- The directory `private_keys` in the root directory of this repository contains three private keys, each key is designated for particular regions as its name suggests.
+- Use the `private-us-east-1.key` key to connect to the `us-east-1` region (or other region that is configured by `terraform.tfvars`) : 
 
+  ```
+  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_EITHER_EC2`
+  ```
+
+- Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode :
+
+  ```
+  vault write -f sys/replication/performance/primary/enable 
+  vault write -f sys/replication/dr/primary/enable
+  ```
+
+- Generate secondary tokens for PR(ap-south-1 region) and DR(eu-central-1 region) replications :
+
+    * For PR(ap-south-1 region) :
+      ```
+      vault write -format=json sys/replication/performance/primary/secondary-token id=pr_secondary_asia | jq -r .wrap_info.token      
+      ```
+      
+      The output should look like :  
+      ```
+      eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyNjAsImlhdCI6MTYwMzExNDQ2MCwianRpIjoicy55OWtXUHRZTVJtMU9lczRQaEdjcnk4MkIiLCJuYmYiOjE2MDMxMTQ0NTUsInR5cGUiOiJ3cmFwcGluZyJ9.ANmspVajd3a3acxxxKSwjQNsTxms4zlM4Acbc-4F0Qh3T0ofoEwVu7KFN68OTJ2OxDAQ7d4LI_LOQbV1oG2Y8alBAWrGWyv3OPUQftA0h5yrTzer4ZLVqIwdik9cjzooJhkKtsQibWGioY48vxiaVpDIQWxGzwoCvFM2tOi8FD91BNYu
+      ```
+
+    * For DR(eu-central-1 region) :
+      ```
+      vault write -format=json sys/replication/dr/primary/secondary-token id=dr_secondary_europe | jq -r .wrap_info.token
+      ```
+      
+      The output should look like :
+      ```
+      eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyMjUsImlhdCI6MTYwMzExNDQyNSwianRpIjoicy5QWW55WmxoUnBONDlRMk5oaTB2RWQwVUciLCJuYmYiOjE2MDMxMTQ0MjAsInR5cGUiOiJ3cmFwcGluZyJ9.APs-iC01TgceBg9FGFaaZncK65b21j_xJMXWX8uXjlUj0QeiYEkT2n89HISbwSvc51yY7pYl8q2mkl1nF7u6-zXbAHvo_uLdYi3p2_LOynLN31hEFtdhgPgIECoSATBboe3OgdQ0yaWbpK7DoDcY4-k4b_Ueg_FU9nJMgzz1qsp0RWT3
+      ```
+
+      Take a note of the generated tokens, they are good for 30 minutes.
+
+- Enable PR replication on the secondary side in `ap-south` region :
+
+  * Login to the node with :
+    ```
+    ssh -i private_keys/private-ap-south-1.key ubuntu@IP_OF_AP_VAULT_NODE
+    ```
+  
+  * Enable PR :
+    ```
+    vault write sys/replication/performance/secondary/enable token=eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyNjAsImlhdCI6MTYwMzExNDQ2MCwianRpIjoicy55OWtXUHRZTVJtMU9lczRQaEdjcnk4MkIiLCJuYmYiOjE2MDMxMTQ0NTUsInR5cGUiOiJ3cmFwcGluZyJ9.ANmspVajd3a3acxxxKSwjQNsTxms4zlM4Acbc-4F0Qh3T0ofoEwVu7KFN68OTJ2OxDAQ7d4LI_LOQbV1oG2Y8alBAWrGWyv3OPUQftA0h5yrTzer4ZLVqIwdik9cjzooJhkKtsQibWGioY48vxiaVpDIQWxGzwoCvFM2tOi8FD91BNYu
+    ```
+
+  * Verify that the PR replication is in `stream-wals` state 
+    ```
+    vault read -format=json sys/replication/performance/status | jq -r .data.state
+    ```
+
+- Enable DR replication on the secondary side in `eu-central` region :
+
+  * Login to the node with :
+    ```
+    ssh -i private_keys/private-eu-central-1.key ubuntu@IP_OF_EU_VAULT_NODE
+    ```
+  
+  * Enable DR :
+    ```
+    vault write sys/replication/dr/secondary/enable token=eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyMjUsImlhdCI6MTYwMzExNDQyNSwianRpIjoicy5QWW55WmxoUnBONDlRMk5oaTB2RWQwVUciLCJuYmYiOjE2MDMxMTQ0MjAsInR5cGUiOiJ3cmFwcGluZyJ9.APs-iC01TgceBg9FGFaaZncK65b21j_xJMXWX8uXjlUj0QeiYEkT2n89HISbwSvc51yY7pYl8q2mkl1nF7u6-zXbAHvo_uLdYi3p2_LOynLN31hEFtdhgPgIECoSATBboe3OgdQ0yaWbpK7DoDcY4-k4b_Ueg_FU9nJMgzz1qsp0RWT3
+    ```
+
+  * Verify that the DR replication is in `stream-wals` state :
+    ```
+    vault read -format=json sys/replication/dr/status | jq -r .data.state
+    ```
 
 ### TODO :
 
@@ -51,7 +121,7 @@
   - [ ] Isolate the instances and provide Bastion host for accessing them
   - [x] Create configuration object (custom object) for top-level `main.tf`
   - [ ] Add public DNS to the host keys of the local TF machine
-  - [ ] Readme should include instructions on the licensing
+  - [x] Readme should include instructions on the licensing
   - [ ] Review the raft protocol configuration when new version of Vault comes out
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
