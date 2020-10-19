@@ -1,8 +1,17 @@
 ## Simple PoC project that creates three Vault clusters in three different AWS regions.
 
+-----
+
+![Vault Logo](https://github.com/hashicorp/vault/raw/f22d202cde2018f9455dec755118a9b84586e082/Vault_PrimaryLogo_Black.png)
+
+
 ### What is it : 
 
   This project creates three node Vault environment joined in a Raft (integrated storage) cluster in three different AWS regions.
+
+### Simple diagram :
+
+![Diagram](https://app.lucidchart.com/publicSegments/view/27a3bfca-9460-4c74-b7a2-2e9f209dc350/image.png)
 
 ### Prerequisites :
 
@@ -47,6 +56,7 @@
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
   - [ ] Install TF and to some config with TF Vault provider
+  - [ ] Create usage GIF with peek
 
 ### Example `terraform.tfvars` :
 
@@ -59,6 +69,10 @@
   ```
 
 
-### Thanks :
+### Contributing :
 
-- Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
+  - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with   this project. 
+  - PRs are welcome
+
+### License :
+  - [MIT](https://choosealicense.com/licenses/mit/)
