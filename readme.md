@@ -142,7 +142,7 @@
 ### Contributing :
 
   - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with   this project. 
-  - PRs are welcome
+  - PRs are welcome !
 
 ### License :
   - [MIT](https://choosealicense.com/licenses/mit/)
