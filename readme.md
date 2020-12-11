@@ -33,7 +33,7 @@
 - Use the `private-us-east-1.key` key to connect to the `us-east-1` region (or other region that is configured by `terraform.tfvars`) : 
 
   ```
-  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_EITHER_EC2`
+  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_EITHER_EC2
   ```
 
 - Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode :
@@ -124,7 +124,7 @@
   - [x] Readme should include instructions on the licensing
   - [ ] Review the raft protocol configuration when new version of Vault comes out
   - [x] Do smarter check when licensing
-  - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
+  - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
   - [ ] Install TF and to some config with TF Vault provider
   - [ ] Create usage GIF with peek
 
