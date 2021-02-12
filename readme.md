@@ -25,7 +25,7 @@
   - Create `terraform.tfvars` file, example of how it should look like can be found below.
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
-  - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
+ #WORK - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
 
 ### How to enable Vault replication :
 
@@ -36,7 +36,7 @@
   ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_EITHER_EC2`
   ```
 
-- Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode :
+- Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode (the Vault token is pre-configured) :
 
   ```
   vault write -f sys/replication/performance/primary/enable 
@@ -122,7 +122,8 @@
   - [x] Create configuration object (custom object) for top-level `main.tf`
   - [ ] Add public DNS to the host keys of the local TF machine
   - [x] Readme should include instructions on the licensing
-  - [ ] Review the raft protocol configuration when new version of Vault comes out
+  - [x] Review the raft protocol configuration when new version of Vault comes out
+  - [x] Use cloud auto-join feature
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
   - [ ] Install TF and to some config with TF Vault provider
