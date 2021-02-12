@@ -47,7 +47,7 @@ module "vault-cluster-ap" {
 module "inter_vpc_peering" {
   source = "./modules/sub-modules/vpc_peering"
 
-  clusters = var.clusters
+  clusters  = var.clusters
   random_id = local.random_id
 
   # Workaround in order `depends_on` to work
