@@ -25,7 +25,7 @@
   - Create `terraform.tfvars` file, example of how it should look like can be found below.
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
- #WORK - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
+  - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
 
 ### How to enable Vault replication :
 
