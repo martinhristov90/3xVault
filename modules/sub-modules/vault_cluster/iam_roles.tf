@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-# When the role is assumed, the EC2 instance needs the actions described below in order to decrypt and encrypt with symetric key.
+# When the role is assumed, the EC2 instance needs the actions described below in order to decrypt and encrypt with symetric key. The "ec2:DescribeInstances" permission is used by auto-join.
 data "aws_iam_policy_document" "vault-kms-unseal" {
   statement {
     sid       = "VaultKMSUnseal"
@@ -20,6 +20,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
     resources = ["*"]
 
     actions = [
+      "ec2:DescribeInstances",
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:DescribeKey",
@@ -27,6 +28,7 @@ data "aws_iam_policy_document" "vault-kms-unseal" {
   }
 }
 
+# binding policy document to a role
 resource "aws_iam_role" "vault-kms-unseal-role" {
   name               = "vault-role-${var.region}-${var.random_id}"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json

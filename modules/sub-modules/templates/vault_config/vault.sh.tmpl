@@ -12,12 +12,12 @@ cluster_name =  "cluster-${region}"
 # Setting log level
 log_level = "${log_level}"
 
-#Storage Raft stanza
+# Storage Raft stanza
 storage "raft" {
   path = "/opt/vault/data"
   node_id = "${node_id}"
   retry_join {
-    leader_api_addr = "https://${join_to}:8200"
+    auto_join = "provider=aws addr_type=private_v4 tag_key=Name tag_value=vault-${region}-* region=${region}"
   }
 }
 
