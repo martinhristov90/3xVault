@@ -116,7 +116,7 @@
   - [x] Utilize the instance profile for KMS
   - [ ] Utilize the instance profile for AWS auth
   - [ ] Provide replication instructions
-  - [ ] Output IPs of the nodes
+  - [x] Output IPs of the nodes
   - [ ] Create LB
   - [ ] Isolate the instances and provide Bastion host for accessing them
   - [x] Create configuration object (custom object) for top-level `main.tf`
@@ -126,7 +126,7 @@
   - [x] Use cloud auto-join feature
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
-  - [ ] Install TF and to some config with TF Vault provider
+  - [ ] Install TF and do some config with TF Vault provider
   - [ ] Create usage GIF with peek
 
 ### Example `terraform.tfvars` :
