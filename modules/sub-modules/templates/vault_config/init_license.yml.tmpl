@@ -56,6 +56,7 @@ do
   if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]] # HTTP codes that show if Vault is ready to be used
   then
     install_vault_license $ROOT_TOKEN
+    break
   else
     echo "Vault is not ready yet !"
   sleep 1
