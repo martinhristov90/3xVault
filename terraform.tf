@@ -3,7 +3,7 @@ terraform {
 
   required_providers {
     aws = {
-      version = "~> 3.9.0"
+      version = "~> 3.29.1" # This version introduces the "managed_policy_arns" parameter in "aws_iam_role" resource
       source  = "hashicorp/aws"
     }
     null = {

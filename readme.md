@@ -114,7 +114,7 @@
   - [x] Fix SystemD issue - Vault does not start
   - [x] Create role for instance profile of EC2
   - [x] Utilize the instance profile for KMS
-  - [ ] Utilize the instance profile for AWS auth
+  - [x] Utilize the instance profile for AWS auth
   - [ ] Provide replication instructions
   - [x] Output IPs of the nodes
   - [ ] Create LB
