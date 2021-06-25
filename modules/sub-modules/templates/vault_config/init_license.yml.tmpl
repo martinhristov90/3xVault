@@ -14,8 +14,7 @@ sleep 1
 
 vault operator init -format=json -recovery-shares=5 -recovery-threshold=3 > /home/ubuntu/_vaultSetup/keys.json
 
-# Wait for Vault to get Initialized with KMS
-sleep 10
+
 ROOT_TOKEN=`jq -r .root_token /home/ubuntu/_vaultSetup/keys.json`
 
 if [ -z "$ROOT_TOKEN" ]
@@ -49,6 +48,9 @@ else
     echo "Writing license file NOT successful"
 fi
 }
+
+# Wait for Vault to get Initialized with KMS
+sleep 10
 
 # Check if Vault is ready for being licensed
 while true 

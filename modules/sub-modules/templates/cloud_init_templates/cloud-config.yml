@@ -16,16 +16,20 @@ apt:
       source: "deb [arch=amd64] https://apt.releases.hashicorp.com $RELEASE main"
       keyid: A3219F7B
 
-# Installing vault enterprise and jq
+# Installing vault enterprise, jq, terraform and awscli
 packages:
   - vault-enterprise
   - jq
+  - terraform
+  - awscli
 
-package_upgrade: true
+package_upgrade: false
 package_update: true
 
 # Adding the new hostname to /etc/hosts
 manage_etc_hosts: true
 fqdn: "${hostname}"
+
+timezone: ${timezone}
 
 final_message: "The system is finally up, after $UPTIME seconds"
