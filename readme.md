@@ -26,14 +26,14 @@
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
   - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
-
+  - Each node located in `a1` AZ is the active node for the particular cluster. The `VAULT_TOKEN` env variable is automatically populated for the active node of each cluster.
 ### How to enable Vault replication :
 
 - The directory `private_keys` in the root directory of this repository contains three private keys, each key is designated for particular regions as its name suggests.
 - Use the `private-us-east-1.key` key to connect to the `us-east-1` region (or other region that is configured by `terraform.tfvars`) : 
 
   ```
-  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_EITHER_EC2`
+  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_ACTIVE_NODE`
   ```
 
 - Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode (the Vault token is pre-configured) :
@@ -115,7 +115,7 @@
   - [x] Create role for instance profile of EC2
   - [x] Utilize the instance profile for KMS
   - [x] Utilize the instance profile for AWS auth
-  - [ ] Provide replication instructions
+  - [x] Provide replication instructions
   - [x] Output IPs of the nodes
   - [ ] Create LB
   - [ ] Isolate the instances and provide Bastion host for accessing them
@@ -125,7 +125,7 @@
   - [x] Review the raft protocol configuration when new version of Vault comes out
   - [x] Use cloud auto-join feature
   - [x] Do smarter check when licensing
-  - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts   when destroying
+  - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
   - [ ] Install TF and do some config with TF Vault provider
   - [ ] Create usage GIF with peek
 
