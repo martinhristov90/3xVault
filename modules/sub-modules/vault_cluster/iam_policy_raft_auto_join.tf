@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "raft_auto_join" {
     resources = ["*"]
 
     actions = [
-        "ec2:DescribeInstances",
+      "ec2:DescribeInstances",
     ]
   }
 }

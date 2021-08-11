@@ -9,20 +9,20 @@ data "aws_iam_policy_document" "vault_aws_secret" {
     resources = ["arn:aws:iam::${data.aws_caller_identity.current_aws_account.id}:user/vault-*"]
 
     actions = [
-        "iam:AttachUserPolicy",
-        "iam:CreateAccessKey",
-        "iam:CreateUser",
-        "iam:DeleteAccessKey",
-        "iam:DeleteUser",
-        "iam:DeleteUserPolicy",
-        "iam:DetachUserPolicy",
-        "iam:ListAccessKeys",
-        "iam:ListAttachedUserPolicies",
-        "iam:ListGroupsForUser",
-        "iam:ListUserPolicies",
-        "iam:PutUserPolicy",
-        "iam:AddUserToGroup",
-        "iam:RemoveUserFromGroup"
+      "iam:AttachUserPolicy",
+      "iam:CreateAccessKey",
+      "iam:CreateUser",
+      "iam:DeleteAccessKey",
+      "iam:DeleteUser",
+      "iam:DeleteUserPolicy",
+      "iam:DetachUserPolicy",
+      "iam:ListAccessKeys",
+      "iam:ListAttachedUserPolicies",
+      "iam:ListGroupsForUser",
+      "iam:ListUserPolicies",
+      "iam:PutUserPolicy",
+      "iam:AddUserToGroup",
+      "iam:RemoveUserFromGroup"
     ]
   }
 }
