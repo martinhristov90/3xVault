@@ -8,10 +8,10 @@ data "aws_iam_policy_document" "vault_aws_auth" {
     resources = ["*"]
 
     actions = [
-        "ec2:DescribeInstances",
-        "iam:GetInstanceProfile",
-        "iam:GetUser",
-        "iam:GetRole"
+      "ec2:DescribeInstances",
+      "iam:GetInstanceProfile",
+      "iam:GetUser",
+      "iam:GetRole"
     ]
   }
 }

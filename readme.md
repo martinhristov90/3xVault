@@ -128,7 +128,7 @@
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
   - [ ] Install TF and do some config with TF Vault provider
   - [ ] Create usage GIF with peek
-
+  - [x] Provide ability to enable Raft auto-snapshot feature
 ### Example `terraform.tfvars` :
 
   ```

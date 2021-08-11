@@ -5,3 +5,4 @@ LOGS*
 /private_keys/private*
 !/**/.gitkeep
 trash/
+crash.log
