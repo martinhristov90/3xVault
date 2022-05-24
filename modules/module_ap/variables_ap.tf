@@ -20,7 +20,7 @@ variable "vault_license" {
 }
 
 variable "vault_version" {
-  description = "Version of the Vault binary version to be used"
+  description = "Version of the Vault binary to be used"
 }
 
 variable "vpc_cidr" {
