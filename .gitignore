@@ -6,3 +6,5 @@ LOGS*
 !/**/.gitkeep
 trash/
 crash.log
+.terraform
+.terraform.*

@@ -28,3 +28,7 @@ variable "vault_common_ca_private_key" {
 variable "vault_license" {
   description = "Vault license"
 }
+
+variable "vault_version" {
+  description = "Version of the Vault binary version to be used"
+}
