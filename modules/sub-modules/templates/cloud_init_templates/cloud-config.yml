@@ -18,7 +18,7 @@ apt:
 
 # Installing vault enterprise, jq, terraform and awscli
 packages:
-  - [vault-enterprise, 1.7.3+ent]
+  - [vault-enterprise, "${vault_version}"]
   - jq
   - terraform
   - awscli

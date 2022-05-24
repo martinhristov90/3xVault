@@ -1,11 +1,11 @@
 provider "aws" {
-  alias  = "hq_provider"
+  alias = "hq_provider"
 }
 
 provider "aws" {
-  alias  = "dr_provider"
+  alias = "dr_provider"
 }
 
 provider "aws" {
-  alias  = "pr_provider"
+  alias = "pr_provider"
 }

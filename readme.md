@@ -25,11 +25,11 @@
   - Create `terraform.tfvars` file, example of how it should look like can be found below.
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
-  - Execute Terraform plan and apply: `terraform plan` and `terraform apply`.
+  - Execute Terraform plan and apply: `terraform plan` and `terraform apply`, the IPs of all Vault nodes are printed as Terraform outputs.
   - Each node located in `a1` AZ is the active node for the particular cluster. The `VAULT_TOKEN` env variable is automatically populated for the active node of each cluster.
 ### How to enable Vault replication :
 
-- The directory `private_keys` in the root directory of this repository contains three private keys, each key is designated for particular regions as its name suggests.
+- The directory `private_keys` in the root directory of this repository contains three private keys, each key is designated for particular region as its name suggests.
 - Use the `private-us-east-1.key` key to connect to the `us-east-1` region (or other region that is configured by `terraform.tfvars`) : 
 
   ```
@@ -129,16 +129,26 @@
   - [ ] Install TF and do some config with TF Vault provider
   - [ ] Create usage GIF with peek
   - [x] Provide ability to enable Raft auto-snapshot feature
+  - [x] Provide configurable Vault version for each cluster
 ### Example `terraform.tfvars` :
 
   ```
   clusters = {
-    "us" = { region = "us-east-1", vpc_cidr = "192.168.0.0/24" },
-    "ap" = { region = "ap-east-1", vpc_cidr = "192.168.100.0/24" },
-    "eu" = { region = "eu-central-1", vpc_cidr = "192.168.200.0/24" }
+    "us" = { region = "us-east-2", vpc_cidr = "192.168.0.0/24", vault_version = "1.10.3-1+ent" },
+    "ap" = { region = "ap-south-1", vpc_cidr = "192.168.100.0/24", vault_version = "1.10.1-1+ent" },
+    "eu" = { region = "eu-west-1", vpc_cidr = "192.168.200.0/24", vault_version = "1.10.1-1+ent" }
   }
+
+  # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo
   ```
 
+### Example SSH commands :
+
+  ```
+  ssh -i ./private_keys/private-ap-south-1.key ubuntu@IP_VAULT_INSTANCE_AP_REGION
+  ssh -i ./private_keys/private-eu-west-1.key ubuntu@IP_VAULT_INSTANCE_EU_REGION
+  ssh -i ./private_keys/private-us-east-2.key ubuntu@IP_VAULT_INSTANCE_US_REGION
+  ```
 
 ### Contributing :
 

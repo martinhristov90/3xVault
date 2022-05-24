@@ -8,8 +8,9 @@ data "template_cloudinit_config" "myhost" {
   part {
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/../templates/cloud_init_templates/cloud-config.yml", {
-      hostname = "vault-${var.region}-${each.key}-${var.random_id}",
-      timezone = "Europe/Sofia" # Non configurable for now
+      hostname      = "vault-${var.region}-${each.key}-${var.random_id}",
+      timezone      = "Europe/Sofia" # Non configurable for now,
+      vault_version = var.vault_version
     })
   }
   # Fixing Systemd Unit file because of "Unknown lvalue 'StartLimitIntervalSec' in section 'Unit'"
