@@ -2,7 +2,6 @@
 #!/usr/bin/env bash
 
 # Fixing Systemd Unit file because of "Unknown lvalue 'StartLimitIntervalSec' in section 'Unit'"
-
 cat << EOF > /usr/lib/systemd/system/vault.service
 [Unit]
 Description="HashiCorp Vault - A tool for managing secrets"
@@ -35,6 +34,8 @@ LimitNOFILE=65536
 LimitMEMLOCK=infinity
 StartLimitInterval=30s
 StartLimitBurst=3
+# Adding VAULT_LICENSE_PATH environment in case newer version of Vault > 1.8, so autoloading license can be provided. In case older version of Vault is used < 1.8 the VAULT_LICENSE_PATH env var has not meaning
+Environment="VAULT_LICENSE_PATH=/home/ubuntu/_vaultSetup/license.hclic"
 
 [Install]
 WantedBy=multi-user.target

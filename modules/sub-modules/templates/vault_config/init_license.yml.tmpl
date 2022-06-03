@@ -3,17 +3,14 @@
 # Making working dir for Vault setup
 mkdir -p /home/ubuntu/_vaultSetup
 touch /home/ubuntu/_vaultSetup/keys.json
-touch /home/ubuntu/_vaultSetup/license.json
 
 sudo chown -R vault:vault /home/ubuntu/_vaultSetup
-sudo chmod -R 0644 /home/ubuntu/_vaultSetup/*
 
 echo "Initializing Vault..."
 # Wait for Vault to start 
 sleep 1
 
 vault operator init -format=json -recovery-shares=5 -recovery-threshold=3 > /home/ubuntu/_vaultSetup/keys.json
-
 
 ROOT_TOKEN=`jq -r .root_token /home/ubuntu/_vaultSetup/keys.json`
 
@@ -27,13 +24,6 @@ cat << EOF >> /etc/profile.d/vault.sh
 export VAULT_TOKEN=$ROOT_TOKEN
 EOF
 
-# Creating license.json
-
-cat << EOF > /home/ubuntu/_vaultSetup/license.json
-{
-  "text": "${vault_license}"
-}
-EOF
 
 # Install the Vault license and deletes the license file
 function install_vault_license () {
@@ -42,7 +32,7 @@ curl -s --request PUT --header "X-Vault-Token: $1" --data @/home/ubuntu/_vaultSe
 
 if [ $? -eq 0 ]
 then 
-    rm /home/ubuntu/_vaultSetup/license.json
+    #rm /home/ubuntu/_vaultSetup/license.json
      echo "Writing license file IS successful"
 else
     echo "Writing license file NOT successful"
@@ -57,13 +47,20 @@ while true
 do 
   if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]] # HTTP codes that show if Vault is ready to be used
   then
-    install_vault_license $ROOT_TOKEN
-    break
-  else
-    echo "Vault is not ready yet !"
+    # Checking if Vault is using autoloading license (version > 1.8) if 404 is returned, autoload is not used, so installing the license via /sys/license endpoint
+    if [[ $(curl -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (404) ]]
+    then
+      install_vault_license $ROOT_TOKEN
+      break 2
+    # If autoloading license is used, break from the loop
+    elif [[ $(curl -LI -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (200) ]]
+    then
+      break 2
+    fi
+  echo "Vault is not ready yet !"
   sleep 1
   fi
 done
 
 # For debugging
-echo "This is a active node" > /tmp/vault_mode
+echo "This is a active node, other nodes join to it" > /tmp/vault_mode
