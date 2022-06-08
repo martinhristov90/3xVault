@@ -11,3 +11,12 @@ write_files:
     encoding: b64
     content: ${vault_tls_private_key}
     permissions: '0600'
+  - path: /home/ubuntu/_vaultSetup/license.hclic
+    content: ${vault_license}
+    permissions: '0644'
+  - path: /home/ubuntu/_vaultSetup/license.json
+    content: |
+      {
+        "text": "${vault_license_legacy}"
+      }
+    permissions: '0644'
