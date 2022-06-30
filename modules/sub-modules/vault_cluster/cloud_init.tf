@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "myhost" {
+data "cloudinit_config" "myhost" {
 
   for_each = local.availability_zones_sliced # Each EC2 in the cluster needs different cloud-init
 

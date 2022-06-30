@@ -22,7 +22,7 @@ resource "aws_instance" "vault" {
     Name = "vault-${var.region}-${each.key}-${var.random_id}"
   }
   # Provisioning Vault
-  user_data = data.template_cloudinit_config.myhost[each.key].rendered
+  user_data = data.cloudinit_config.myhost[each.key].rendered
 }
 
 # Getting the AWS account id
