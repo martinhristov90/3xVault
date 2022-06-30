@@ -1,29 +1,29 @@
 terraform {
-  required_version = "~>0.13.2"
+  required_version = "~>1.2.4"
 
   required_providers {
     aws = {
-      version = "~> 3.29.1" # This version introduces the "managed_policy_arns" parameter in "aws_iam_role" resource
+      version = "~> 4.20.1"
       source  = "hashicorp/aws"
     }
     null = {
-      version = "~> 3.0.0"
+      version = "~> 3.1.1"
       source  = "hashicorp/null"
     }
     random = {
-      version = "~> 3.0.0"
+      version = "~> 3.3.2"
       source  = "hashicorp/random"
     }
     tls = {
-      version = "~> 2.2.0"
+      version = "~> 3.4.0"
       source  = "hashicorp/tls"
     }
     template = {
       version = "~> 2.2.0"
-      source  = "hashicorp/template"
+      source  = "hashicorp/cloudinit"
     }
     local = {
-      version = "~> 1.4.0"
+      version = "~> 2.2.3"
       source  = "hashicorp/local"
     }
   }

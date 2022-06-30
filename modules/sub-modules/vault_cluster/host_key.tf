@@ -2,7 +2,7 @@
 resource "tls_private_key" "host" {
   count       = length(local.algorithms)
   algorithm   = local.algorithms[count.index]
-  ecdsa_curve = local.algorithms[count.index] == "ECDSA" ? "P384" : ""
+  ecdsa_curve = local.algorithms[count.index] == "ECDSA" ? "P384" : "P224"
   rsa_bits    = local.algorithms[count.index] == "RSA" ? 4096 : 2048
 }
 
