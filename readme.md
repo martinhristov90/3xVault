@@ -142,6 +142,20 @@
   # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo
   ```
 
+### Example of enabling S3 auto snapshot (backup) :
+
+  ```
+  vault write sys/storage/raft/snapshot-auto/config/vault_backup_bucket \
+  storage_type="aws-s3" \
+  aws_s3_bucket="raft-snapshot-bucket-<region-here>-<current-env-id>" \
+  aws_s3_region="<region-here>" \
+  interval="1m" \
+  retain=5
+  ```
+  For every cluster there is a dedicated S3 bucket to keep the Raft snapshots. 
+  Before using the above-mentioned command replace the `<region-here>` string with the region of the cluster, for example `us-east-2` and `<current-env-id>` string with the `current-env-id` TF output, for example `touched-cicada`, which corresponds to the current deployment.
+  You can use the `terraform output` command to retrieve `current-env-id` value.
+
 ### Example SSH commands :
 
   ```
