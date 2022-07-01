@@ -126,7 +126,7 @@
   - [x] Use cloud auto-join feature
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
-  - [ ] Install TF and do some config with TF Vault provider
+  - [ ] Install TF and do some config with TF Vault provider. For example, enable `aws` auth, `aws` secrets engine and configure S3 Raft auto snapshot
   - [ ] Create usage GIF with peek
   - [x] Provide ability to enable Raft auto-snapshot feature
   - [x] Provide configurable Vault version for each cluster
