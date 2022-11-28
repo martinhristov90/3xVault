@@ -22,10 +22,10 @@
 
   - Clone the repository : `git clone https://github.com/martinhristov90/3xVault.git`.
   - Change into its directory : `cd 3xVault`.
-  - Create `terraform.tfvars` file, example of how it should look like can be found below.
+  - Create `terraform.tfvars` file, example of how it should look like can be found below. While creating `terraform.tfvars` file specify Vault version newer than 1.6.0, so "Integrated Storage Cloud Auto Join" is available.
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers : `terraform init`.
-  - Execute Terraform plan and apply: `terraform plan` and `terraform apply`, the IPs of all Vault nodes are printed as Terraform outputs.
+  - Execute Terraform plan and apply : `terraform plan` and `terraform apply`, the IPs of all Vault nodes are printed as Terraform outputs.
   - Each node located in `a1` AZ is the active node for the particular cluster. The `VAULT_TOKEN` env variable is automatically populated for the active node of each cluster.
 ### How to enable Vault replication :
 
