@@ -130,16 +130,17 @@
   - [ ] Create usage GIF with peek
   - [x] Provide ability to enable Raft auto-snapshot feature
   - [x] Provide configurable Vault version for each cluster
+  - [x] Add ability to select EC2 sizes.
 ### Example `terraform.tfvars` :
 
   ```
   clusters = {
-    "us" = { region = "us-east-2", vpc_cidr = "192.168.0.0/24", vault_version = "1.10.3-1+ent" },
-    "ap" = { region = "ap-south-1", vpc_cidr = "192.168.100.0/24", vault_version = "1.10.1-1+ent" },
-    "eu" = { region = "eu-west-1", vpc_cidr = "192.168.200.0/24", vault_version = "1.10.1-1+ent" }
+  "us" = { region = "us-east-2", vpc_cidr = "192.168.0.0/24", vault_version = "1.10.3+ent-2", vault_ec2_type = "large" },
+  "ap" = { region = "ap-south-1", vpc_cidr = "192.168.100.0/24", vault_version = "1.9.6+ent-2", vault_ec2_type = "large" },
+  "eu" = { region = "eu-west-1", vpc_cidr = "192.168.200.0/24", vault_version = "1.9.6+ent-2", vault_ec2_type = "large" }
   }
-
-  # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo
+  # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo.
+  # The "vault_ec2_type" variable should be one of the following types - small or large. Small corresponds to "t3.small" while "large" corresponds to "t3.large".
   ```
 
 ### Example of enabling S3 auto snapshot (backup) :

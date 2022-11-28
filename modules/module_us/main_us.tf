@@ -14,9 +14,9 @@ module "vault-cluster-us" {
   vault_common_ca_cert        = var.vault_common_ca_cert
   vault_common_ca_private_key = var.vault_common_ca_private_key
 
-  vault_license = var.vault_license
-  vault_version = var.vault_version
-
+  vault_license  = var.vault_license
+  vault_version  = var.vault_version
+  vault_ec2_type = var.vault_ec2_type
   providers = {
     aws = aws.us-provider
   }
