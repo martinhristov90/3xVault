@@ -8,10 +8,10 @@ module "vault-cluster-us" {
   random_id                   = local.random_id
   vault_license               = local.vault_license
 
-  region        = var.clusters.us.region
-  vpc_cidr      = var.clusters.us.vpc_cidr
-  vault_version = var.clusters.us.vault_version
-
+  region         = var.clusters.us.region
+  vpc_cidr       = var.clusters.us.vpc_cidr
+  vault_version  = var.clusters.us.vault_version
+  vault_ec2_type = var.clusters.us.vault_ec2_type
 }
 
 # Creating DR cluster in Europe
@@ -24,9 +24,10 @@ module "vault-cluster-eu" {
   random_id                   = local.random_id
   vault_license               = local.vault_license
 
-  region        = var.clusters.eu.region
-  vpc_cidr      = var.clusters.eu.vpc_cidr
-  vault_version = var.clusters.eu.vault_version
+  region         = var.clusters.eu.region
+  vpc_cidr       = var.clusters.eu.vpc_cidr
+  vault_version  = var.clusters.eu.vault_version
+  vault_ec2_type = var.clusters.eu.vault_ec2_type
 }
 
 # Creating PR cluster in Asia
@@ -39,9 +40,10 @@ module "vault-cluster-ap" {
   random_id                   = local.random_id
   vault_license               = local.vault_license
 
-  region        = var.clusters.ap.region
-  vpc_cidr      = var.clusters.ap.vpc_cidr
-  vault_version = var.clusters.ap.vault_version
+  region         = var.clusters.ap.region
+  vpc_cidr       = var.clusters.ap.vpc_cidr
+  vault_version  = var.clusters.ap.vault_version
+  vault_ec2_type = var.clusters.ap.vault_ec2_type
 
 }
 

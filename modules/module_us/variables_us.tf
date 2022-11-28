@@ -27,3 +27,6 @@ variable "vpc_cidr" {
   description = "CIDR of the VPC"
 }
 
+variable "vault_ec2_type" {
+  description = "EC2 instance type"
+}

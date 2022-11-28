@@ -12,3 +12,6 @@ locals {
   first_subnet_host = element(tolist(local.availability_zones_sliced), 0)
 }
 
+locals {
+  vault_ec2_type = var.vault_ec2_type == "large" ? "t3.large" : "t3.small"
+}
