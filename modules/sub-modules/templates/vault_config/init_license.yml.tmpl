@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Making working dir for Vault setup
+set -xv
 mkdir -p /home/ubuntu/_vaultSetup
 touch /home/ubuntu/_vaultSetup/keys.json
 
 sudo chown -R vault:vault /home/ubuntu/_vaultSetup
 
-echo "Initializing Vault..."
+echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Initializing Vault..."
 # Wait for Vault to start 
 sleep 1
 
@@ -16,7 +17,7 @@ ROOT_TOKEN=`jq -r .root_token /home/ubuntu/_vaultSetup/keys.json`
 
 if [ -z "$ROOT_TOKEN" ]
 then
-    echo "ROOT_TOKEN is empty !!!"
+    echo "$(date +"%A, %b %d, %Y %H:%M:%S") - ROOT_TOKEN is empty !!!"
     exit 1
 fi
 
@@ -33,9 +34,9 @@ curl -s --request PUT --header "X-Vault-Token: $1" --data @/home/ubuntu/_vaultSe
 if [ $? -eq 0 ]
 then 
     #rm /home/ubuntu/_vaultSetup/license.json
-     echo "Writing license file IS successful"
+     echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Writing license file IS successful"
 else
-    echo "Writing license file NOT successful"
+    echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Writing license file NOT successful"
 fi
 }
 
@@ -48,19 +49,21 @@ do
   if [[ $(curl -LI -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/health) =~ (200|429|473) ]] # HTTP codes that show if Vault is ready to be used
   then
     # Checking if Vault is using autoloading license (version > 1.8) if 404 is returned, autoload is not used, so installing the license via /sys/license endpoint
-    if [[ $(curl -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (404) ]]
+    if [[ $(curl -X GET -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (404) ]]
     then
+      echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Installing Vault license via /sys/license endpoint"
       install_vault_license $ROOT_TOKEN
       break 2
     # If autoloading license is used, break from the loop
-    elif [[ $(curl -LI -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (200) ]]
+    elif [[ $(curl -X GET -LI -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (200) ]]
     then
+      echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Vault is using autolicensing"
       break 2
     fi
-  echo "Vault is not ready yet !"
+  echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Vault is not ready yet !"
   sleep 1
   fi
 done
 
 # For debugging
-echo "This is a active node, other nodes join to it" > /tmp/vault_mode
+echo "$(date +"%A, %b %d, %Y %H:%M:%S") - This is a active node, other nodes join to it" > /tmp/vault_mode
