@@ -14,7 +14,7 @@ apt:
   sources:
     hashicorp.list:
       source: "deb [arch=amd64] https://apt.releases.hashicorp.com $RELEASE main"
-      keyid: A3219F7B
+      keyid: A621E701
 
 # Installing vault enterprise, jq, terraform and awscli
 packages:
