@@ -5,7 +5,7 @@ data "aws_iam_policy_document" "vault_kms_unseal" {
   statement {
     sid       = "vaultPolicyDocumentKMSUnseal"
     effect    = "Allow"
-    resources = ["*"]
+    resources = ["${aws_kms_key.vault.arn}"]
 
     actions = [
       "kms:Encrypt",

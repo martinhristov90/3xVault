@@ -1,7 +1,7 @@
 # This file creates a managed policy for utilizing the Vault's AWS secrets engine
 
 
-# Policy document (only in TF) that gives needed EC2 permissions for Raft auto_join feature
+# Policy document (only in TF) that gives needed permissions for AWS secrets engine
 data "aws_iam_policy_document" "vault_aws_secret" {
   statement {
     sid       = "vaultPolicyDocumentVaultAWSSecret"
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "vault_aws_secret" {
   }
 }
 
-# Creating a managed policy for KMS auto unseal feature
+# Creating a managed policy for AWS secrets engine
 resource "aws_iam_policy" "vault_aws_secret_policy" {
   name        = "vault-policy-vault-aws-secret-${var.region}-${var.random_id}"
   path        = "/"

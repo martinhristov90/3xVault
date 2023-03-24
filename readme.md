@@ -131,6 +131,7 @@
   - [x] Provide ability to enable Raft auto-snapshot feature
   - [x] Provide configurable Vault version for each cluster
   - [x] Add ability to select EC2 sizes.
+  - [x] Verify the ability updating the infra in-place via `terraform apply`.
 ### Example `terraform.tfvars` :
 
   ```
