@@ -25,7 +25,3 @@ data "aws_subnet" "subnets" {
 
   id = aws_subnet.public_subnet[each.key].id
 }
-
-# Getting EC2 instance type offerings for particular regions
-
-#

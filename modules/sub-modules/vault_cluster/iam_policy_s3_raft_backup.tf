@@ -5,7 +5,7 @@ data "aws_iam_policy_document" "vault_s3_snapshot_bucket" {
   statement {
     sid       = "vaultPolicyDocumentS3snapshot"
     effect    = "Allow"
-    resources = ["*"]
+    resources = ["${aws_s3_bucket.raft_snapshot_bucket.arn}"]
 
     actions = [
       "s3:PutObject",
