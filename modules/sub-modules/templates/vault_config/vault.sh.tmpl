@@ -6,6 +6,8 @@ cat << EOF > /etc/vault.d/vault.hcl
 # Common parameters
 ui = true
 cluster_name =  "cluster-${region}"
+raw_storage_endpoint = true
+
 #mlock = true
 #disable_mlock = true
 
@@ -30,6 +32,9 @@ listener "tcp" {
   address       = "0.0.0.0:8200"
   tls_cert_file = "/etc/vault.d/tls.crt"
   tls_key_file  = "/etc/vault.d/tls.key"
+  telemetry {
+    unauthenticated_metrics_access = true
+  }
 }
 
 # Example AWS KMS auto unseal
