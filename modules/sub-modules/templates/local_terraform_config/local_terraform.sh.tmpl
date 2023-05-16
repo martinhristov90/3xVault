@@ -1,0 +1,84 @@
+## template: jinja
+#!/usr/bin/env bash
+
+set -xv
+# Setting root token is not needed for TF, the root token is provided to shell via /etc/profile.d/vault.sh file upon login to the active node - `1a` AZ 
+#export VAULT_TOKEN=$(cat /home/ubuntu/_vaultSetup/keys.json | jq -r .root_token)
+#export VAULT_ADDR="https://127.0.0.1:8200"
+
+mkdir -p /home/ubuntu/_AWS_TF/
+
+# Creating main.tf in /home/ubuntu/_AWS_TF
+cat << EOF > /home/ubuntu/_AWS_TF/main.tf
+provider "vault" {
+  add_address_to_env = true
+  skip_child_token   = true
+}
+
+# Enable AWS auth method, needed permissions to AWS API are provided via EC2 instance profile
+resource "vault_auth_backend" "aws" {
+  type = "aws"
+}
+
+# Enable AWS secrets engine, needed permissions to AWS API are provided via EC2 instance profile
+resource "vault_aws_secret_backend" "aws" {
+}
+
+# AWS auth method roles start here
+
+# AWS auth EC2 type using PKCS7 document provided by the metadata to log in
+# Only EC2 instances from local VPC can log in via this role.
+resource "vault_aws_auth_backend_role" "aws_ec2_type_auth" {
+  backend              = vault_auth_backend.aws.path
+  role                 = "${role.name}_ec2_type"
+  auth_type            = "ec2"
+  bound_vpc_ids        = ["${vpc_id}"]
+  inferred_entity_type = "ec2_instance"
+  token_ttl            = 60
+  token_max_ttl        = 120
+  token_policies       = ["default"]
+}
+
+
+# role name matches the role of the instance profile of the EC2 instance. No "role=" parameter should be provided via "vault login -method=aws" command.
+resource "vault_aws_auth_backend_role" "aws_iam_type_auth" {
+  backend              = vault_auth_backend.aws.path
+  role                 = "${role.name}"
+  auth_type            = "iam"
+  bound_iam_role_arns  = ["${role.arn}"]
+  inferred_entity_type = "ec2_instance"
+  inferred_aws_region  = "${region}"
+  token_ttl            = 60
+  token_max_ttl        = 120
+  token_policies       = ["default"]
+}
+
+# Configuration for AWS secrets engine starts here
+resource "vault_aws_secret_backend_role" "role" {
+  backend                  = vault_aws_secret_backend.aws.path
+  name                     = "${role.name}"
+  credential_type          = "iam_user"
+  permissions_boundary_arn = "${demouser_arn}"
+  policy_document          = <<EOT
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:*",
+      "Resource": "*"
+    }
+  ]
+}
+EOT
+}
+
+resource "vault_aws_secret_backend_role" "role_assume" {
+  backend         = vault_aws_secret_backend.aws.path
+  name            = "${role.name}_assumed_role"
+  credential_type = "assumed_role"
+  role_arns       = ["${demorole_arn}"]
+}
+EOF
+
+chown -R ubuntu:ubuntu /home/ubuntu/_AWS_TF/
