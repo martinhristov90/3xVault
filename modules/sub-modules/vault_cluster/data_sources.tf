@@ -28,3 +28,8 @@ data "aws_subnet" "subnets" {
 
 # Getting the AWS account ID, it is used to create a policy and make sure that the AWS secrets engine has only permissions on IAM accounts that start with "vault-"
 data "aws_caller_identity" "current_aws_account" {}
+
+# Getting the ARN for DemoUser permission boundary policy
+data "aws_iam_policy" "demouser" {
+  name = "DemoUser"
+}

@@ -126,12 +126,13 @@
   - [x] Use cloud auto-join feature
   - [x] Do smarter check when licensing
   - [x] Improve VPC peering - Add routes to the existing route tables and adjust timeouts when destroying
-  - [ ] Install TF and do some config with TF Vault provider. For example, enable `aws` auth, `aws` secrets engine and configure S3 Raft auto snapshot
+  - [x] Install TF and do some config with TF Vault provider. For example, enable `aws` auth, `aws` secrets engine and configure S3 Raft auto snapshot
   - [ ] Create usage GIF with peek
   - [x] Provide ability to enable Raft auto-snapshot feature
   - [x] Provide configurable Vault version for each cluster
   - [x] Add ability to select EC2 sizes.
   - [x] Verify the ability updating the infra in-place via `terraform apply`.
+  - [ ] Attach audit volumes and configure logrotate
 ### Example `terraform.tfvars` :
 
   ```
@@ -160,15 +161,79 @@
 
 ### Example SSH commands :
 
-  ```
+  ```bash
   ssh -i ./private_keys/private-ap-south-1.key ubuntu@IP_VAULT_INSTANCE_AP_REGION
   ssh -i ./private_keys/private-eu-west-1.key ubuntu@IP_VAULT_INSTANCE_EU_REGION
   ssh -i ./private_keys/private-us-east-2.key ubuntu@IP_VAULT_INSTANCE_US_REGION
   ```
+### Example configuring AWS secrets engine and AWS auth method via local (local on EC2) Terraform:
+
+- Both of the instances have latest Terraform version installed locally via Cloud-init.
+- The Terraform configuration for configuring AWS secret engine and AWS auth method is located inside the `/home/ubuntu/_AWS_TF` path by default.
+- To configure the AWS secret engine and AWS auth method via TF:
+  * On active nodes for every cluster that is initially the node located in `1a` availability zone, for example `vault-us-east-2-us-east-2a-engaged-dinosaur` node, do:
+
+    ```
+    cd /home/ubuntu/_AWS_TF
+    ```
+  * Review the `main.tf` for more information on role naming and configuration details.
+  * Execute `terraform init` for downloading the Vault TF provider.
+  * Execute `terraform apply -auto-approve` to run the `main.tf` file.
+  * List the created roles by `vault list auth/aws/roles` command. The output should look like this:
+
+    ```
+    ubuntu@vault-eu-west-1-eu-west-1a-engaged-dinosaur:~/_AWS_TF$ vault list auth/aws/roles
+    Keys
+    ----
+    vault-role-eu-west-1-engaged-dinosaur
+    vault-role-eu-west-1-engaged-dinosaur_ec2_type
+    ```
+  * The role with `_ec2_type` extension is used for `ec2` type AWS auth method, while the role without the `_ec2_type` extension is used for `iam` type AWS auth method.
+  * To login to Vault from EC2 instance using the `ec2` type of the AWS auth method:
+
+    ```
+    SIGNATURE=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/pkcs7 | tr -d '\n')
+    vault write auth/aws/login role=NAME_OF_EC2_TYPE_ROLE_HERE pkcs7=$SIGNATURE
+    ```
+    Replace `NAME_OF_EC2_TYPE_ROLE_HERE` string with the actual name of the `ec2` type role, for example: `vault-role-eu-west-1-engaged-dinosaur_ec2_type`
+  * To login to Vault from EC2 instance using the `iam` type of the AWS auth method:
+
+    ```
+    vault login -method=aws
+    ```
+    No `role=` parameter should be specified, because the role EC2 is using as instance profile matches the name of the AWS auth method role in Vault.
+- In order to utilize the AWS secrets engine (use `vault list aws/roles` for listing role names):
+  * Creating IAM type user:
+
+    ```
+    ubuntu@vault-eu-west-1-eu-west-1a-comic-rhino:~/_AWS_TF$ vault read aws/creds/NAME_OF_EC2_TYPE_ROLE_HERE
+    Key                Value
+    ---                -----
+    lease_id           aws/creds/vault-role-eu-west-1-comic-rhino/v8QdqLTHZpZfHsfeBPCIFbIR
+    lease_duration     768h
+    lease_renewable    true
+    access_key         AKIA<SNIP>
+    secret_key         tYR8h<SNIP>osvc
+    security_token     <nil>
+    ```
+  * Retrieving STS credentials for assumed role:
+
+    ```
+    ubuntu@vault-eu-west-1-eu-west-1a-comic-rhino:~/_AWS_TF$ vault read aws/creds/NAME_OF_EC2_TYPE_ROLE_HERE role_session_name=test
+    Key                Value
+    ---                -----
+    lease_id           aws/creds/vault-role-eu-west-1-comic-rhino_assumed_role/QfxGP6NI7KCo1ytkcHc1gbTN
+    lease_duration     59m59s
+    lease_renewable    false
+    access_key         ASIARZOHN7HQRHCGEYFT
+    arn                arn:aws:sts::1233<SNIP>8033:assumed-role/demo-role-vault-secrets-eu-west-1-comic-rhino/test
+    secret_key         4V0JC<SNIP>vcW0+r
+    security_token     FwoGZ<SNIP>67AzdHGxSl/1MnKX9k
+    ```
 
 ### Contributing :
 
-  - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with   this project. 
+  - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
   - PRs are welcome !
 
 ### License :
