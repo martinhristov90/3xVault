@@ -8,5 +8,5 @@ locals {
   # Use empty license if the license file `license_vault.txt` does not exists
   empty_license = ""
   # Reading Vault license file, if it does not exists, OSS Vault will be used 
-  vault_license = fileexists("${path.root}/license_vault.txt") ? file("${path.root}/license_vault.txt") : local.empty_license
+  vault_license = var.vault_license
 }

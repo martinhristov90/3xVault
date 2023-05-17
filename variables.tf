@@ -8,3 +8,8 @@ variable "clusters" {
 
   description = "Defines all Vault clusters, map of custom objects"
 }
+
+variable "vault_license" {
+  sensitive = true
+  description = "provides Vault license when the repo is running in TF cloud"
+}
