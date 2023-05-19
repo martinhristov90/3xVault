@@ -46,20 +46,20 @@
 
 ### How to enable Vault replication:
 - The directory `private_keys` in the root directory of this repository contains three private keys, each private key is designated for particular region as its name suggests.
-- Use the `private-us-east-1.key` key to connect to the `us-east-1` region (or other region that is configured by `terraform.tfvars` file): 
+- Use the `private-us-east-2.key` key to connect to the `us-east-2` region (or other region that is configured by `terraform.tfvars` file): 
 
   ```
-  ssh -i private_keys/private-us-east-1.key ubuntu@IP_ADDRESS_ACTIVE_NODE`
+  ssh -i private_keys/private-us-east-2.key ubuntu@IP_ADDRESS_ACTIVE_NODE`
   ```
 
-- Enable PR(ap-south-1 region) and DR(eu-central-1 region) replication in primary mode (the Vault token is pre-configured):
+- Enable PR(ap-south-1 region) and DR(eu-west-1 region) replication in primary mode (the Vault token is pre-configured):
 
   ```
   vault write -f sys/replication/performance/primary/enable 
   vault write -f sys/replication/dr/primary/enable
   ```
 
-- Generate secondary tokens for PR(ap-south-1 region) and DR(eu-central-1 region) replications:
+- Generate secondary tokens for PR(ap-south-1 region) and DR(eu-west-1 region) replications:
 
     * For PR(ap-south-1 region):
       ```
@@ -71,7 +71,7 @@
       eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyNjAsImlhdCI6MTYwMzExNDQ2MCwianRpIjoicy55OWtXUHRZTVJtMU9lczRQaEdjcnk4MkIiLCJuYmYiOjE2MDMxMTQ0NTUsInR5cGUiOiJ3cmFwcGluZyJ9.ANmspVajd3a3acxxxKSwjQNsTxms4zlM4Acbc-4F0Qh3T0ofoEwVu7KFN68OTJ2OxDAQ7d4LI_LOQbV1oG2Y8alBAWrGWyv3OPUQftA0h5yrTzer4ZLVqIwdik9cjzooJhkKtsQibWGioY48vxiaVpDIQWxGzwoCvFM2tOi8FD91BNYu
       ```
 
-    * For DR(eu-central-1 region):
+    * For DR(eu-west-1 region):
       ```
       vault write -format=json sys/replication/dr/primary/secondary-token id=dr_secondary_europe | jq -r .wrap_info.token
       ```
@@ -103,7 +103,7 @@
 
   * Login to the node with:
     ```
-    ssh -i private_keys/private-eu-central-1.key ubuntu@IP_OF_EU_VAULT_NODE
+    ssh -i private_keys/private-eu-west-1.key ubuntu@IP_OF_EU_VAULT_NODE
     ```
   
   * Enable DR:
@@ -231,6 +231,7 @@
   - [x] Add ability to select EC2 sizes.
   - [x] Verify the ability updating the infra in-place via `terraform apply`.
   - [ ] Attach audit volumes and configure logrotate
+  - [x] Create VPC peering between DR and PR regions, in case of DR being promoted
 ### Contributing:
   - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
   - PRs are welcome !
