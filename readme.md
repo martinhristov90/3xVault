@@ -231,6 +231,7 @@
   - [x] Add ability to select EC2 sizes.
   - [x] Verify the ability updating the infra in-place via `terraform apply`.
   - [ ] Attach audit volumes and configure logrotate
+  - [ ] Fix permissions of `/home/ubuntu`, so it belongs to `ubuntu` user
 ### Contributing:
   - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
   - PRs are welcome !
