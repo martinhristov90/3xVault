@@ -82,3 +82,5 @@ resource "vault_aws_secret_backend_role" "role_assume" {
 EOF
 
 chown -R ubuntu:ubuntu /home/ubuntu/_AWS_TF/
+# Changing ownership of the home directory of ubuntu user
+chown ubuntu:ubuntu /home/ubuntu
