@@ -36,6 +36,10 @@ variable "vault_license" {
 
 variable "vault_version" {
   description = "Version of the Vault binary version to be used"
+  validation {
+    condition     = can(regex("^([0-9]\\.[0-9]{1,2}?\\.[0-9]\\+ent\\-[0-9])$", var.vault_version))
+    error_message = "Please, enter correct version of Vault"
+  }
 }
 
 variable "vault_ec2_type" {
