@@ -37,17 +37,14 @@
   # The "vault_ec2_type" variable should be one of the following types - small or large. Small corresponds to "t3.small" while "large" corresponds to "t3.large".
   ```
 </details>  
-
-<details>
-
-<summary><h3>Example SSH commands:</h3></summary>
+### Example SSH commands:
 
   ```bash
   ssh -i ./private_keys/private-ap-south-1.key ubuntu@IP_VAULT_INSTANCE_AP_REGION
   ssh -i ./private_keys/private-eu-west-1.key ubuntu@IP_VAULT_INSTANCE_EU_REGION
   ssh -i ./private_keys/private-us-east-2.key ubuntu@IP_VAULT_INSTANCE_US_REGION
   ```
-</details>
+
 -----
 
 ### How to enable Vault replication:
