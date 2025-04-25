@@ -23,7 +23,9 @@
   - Initialize Terraform providers: `terraform init`.
   - Execute Terraform plan and apply: `terraform plan` and `terraform apply`, the IPs of all Vault nodes are printed as Terraform outputs.
   - Each node located in `a1` AZ is the active node for the particular cluster. The `VAULT_TOKEN` env variable is automatically populated via `/etc/profile.d/vault.sh` for the active node of each cluster.
-### Example `terraform.tfvars`:
+<details>
+
+<summary><h3>Example <code>terraform.tfvars:</code></h3></summary>
 
   ```
   clusters = {
@@ -34,6 +36,7 @@
   # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo.
   # The "vault_ec2_type" variable should be one of the following types - small or large. Small corresponds to "t3.small" while "large" corresponds to "t3.large".
   ```
+</details>  
 ### Example SSH commands:
 
   ```bash
