@@ -43,7 +43,7 @@ variable "vault_version" {
 }
 
 variable "vault_ec2_type" {
-  description = "The size of the EC2 instance"
+  description = "The size of the EC2 instance in AWS"
   type        = string
 
   validation {
