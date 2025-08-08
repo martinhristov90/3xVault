@@ -9,7 +9,8 @@ cluster_name =  "cluster-${region}"
 raw_storage_endpoint = true
 
 #mlock = true
-#disable_mlock = true
+#This has to be explicitly set for Vault 1.20.x and later.
+disable_mlock = false
 
 # Setting log level
 log_level = "${log_level}"
