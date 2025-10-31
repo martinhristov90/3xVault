@@ -9,7 +9,7 @@
   This project creates three node Vault environment joined in a Raft (integrated storage) cluster in three different AWS regions.
 
 ### Simple diagram:
-![Diagram](https://app.lucidchart.com/publicSegments/view/27a3bfca-9460-4c74-b7a2-2e9f209dc350/image.png)
+![Diagram](./diagram/image.png)
 
 ### Prerequisites:
   - Having AWS account with the necessary permissions.
