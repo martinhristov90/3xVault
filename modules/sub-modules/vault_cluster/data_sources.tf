@@ -5,6 +5,9 @@ data "aws_availability_zones" "available" {
 
 # Getting the latest Ubuntu image
 data "aws_ami" "ubuntu" {
+  # Use this image (official Ubuntu) if var.use_private_image is false
+  count = var.use_private_image ? 0 : 1
+
   most_recent = "true"
   owners      = ["amazon"]
 
@@ -17,6 +20,21 @@ data "aws_ami" "ubuntu" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+}
+
+data "aws_ami" "hc-base-ubuntu-2404" {
+  # Use this image if var.use_private_image is true
+  count = var.use_private_image ? 1 : 0
+  filter {
+    name   = "name"
+    values = ["hc-base-ubuntu-2404-amd64-*"]
+  }
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+  most_recent = true
+  owners      = ["888995627335"] # ami-prod account
 }
 
 # Getting subnets cidr blocks
