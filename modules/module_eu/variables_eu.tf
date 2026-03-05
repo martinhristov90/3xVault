@@ -30,3 +30,8 @@ variable "vpc_cidr" {
 variable "vault_ec2_type" {
   description = "EC2 instance type"
 }
+
+variable "use_private_image" {
+  description = "Enables the usage of proprietary image (if accessible) rather than Ubuntu, used for testing within organization"
+  type        = bool
+}
