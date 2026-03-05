@@ -233,7 +233,7 @@
   - [ ] Attach audit volumes and configure logrotate
   - [x] Fix permissions of `/home/ubuntu`, so it belongs to `ubuntu` user
   - [x] Create VPC peering between DR and PR regions, in case of DR being promoted
-  - [x] Have separete directory for `vault` user, root keys are stored there
+  - [x] Have separete directory for `vault` user, root keys are stored there. Those should be removed from production use!!!
 ### Contributing:
   - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
   - PRs are welcome !
