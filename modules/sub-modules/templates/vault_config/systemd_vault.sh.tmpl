@@ -35,7 +35,7 @@ LimitMEMLOCK=infinity
 StartLimitInterval=30s
 StartLimitBurst=3
 # Adding VAULT_LICENSE_PATH environment in case newer version of Vault > 1.8, so autoloading license can be provided. In case older version of Vault is used < 1.8 the VAULT_LICENSE_PATH env var has not meaning
-Environment="VAULT_LICENSE_PATH=/home/ubuntu/_vaultSetup/license.hclic"
+Environment="VAULT_LICENSE_PATH=/home/vault/_vaultSetup/license.hclic"
 
 [Install]
 WantedBy=multi-user.target

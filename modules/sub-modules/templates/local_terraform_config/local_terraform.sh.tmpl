@@ -3,7 +3,7 @@
 
 set -xv
 # Setting root token is not needed for TF, the root token is provided to shell via /etc/profile.d/vault.sh file upon login to the active node - `1a` AZ 
-#export VAULT_TOKEN=$(cat /home/ubuntu/_vaultSetup/keys.json | jq -r .root_token)
+#export VAULT_TOKEN=$(cat /home/vault/_vaultSetup/keys.json | jq -r .root_token)
 #export VAULT_ADDR="https://127.0.0.1:8200"
 
 mkdir -p /home/ubuntu/_AWS_TF/

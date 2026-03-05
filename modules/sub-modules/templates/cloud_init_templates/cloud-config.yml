@@ -6,7 +6,8 @@ users:
     - name: vault
       gecos: service vault user
       shell: /usr/sbin/nologin
-      system: true
+      system: false # Setting this to false, so homedir is created
+      homedir: /home/vault
       lock_passwd: true
 
 # Adding Hashicorp repo
