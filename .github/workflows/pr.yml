@@ -1,0 +1,330 @@
+---
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+      - various_fixes
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+env:
+  TERRAFORM_VERSION: '1.9.0'
+  TFLINT_VERSION: 'v0.50.0'
+  TFSEC_VERSION: 'v1.28.0'
+
+jobs:
+  # Job 1: Terraform Format Check
+  terraform-fmt:
+    name: Terraform Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Comment on PR
+        if: steps.fmt.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Terraform Format Check Failed**\n\nPlease run `terraform fmt -recursive` to format your code.'
+            })
+
+      - name: Fail if format check failed
+        if: steps.fmt.outcome == 'failure'
+        run: exit 1
+
+  # Job 2: Terraform Validate
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    strategy:
+      matrix:
+        directory:
+          - '.'
+          - 'modules/module_us'
+          - 'modules/module_eu'
+          - 'modules/module_ap'
+          - 'modules/sub-modules/vault_cluster'
+          - 'modules/sub-modules/vpc_peering'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+        working-directory: ${{ matrix.directory }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ matrix.directory }}
+
+  # Job 3: TFLint
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache TFLint plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+
+      - name: Initialize TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --recursive --format=compact
+
+  # Job 4: TFSec Security Scan
+  tfsec:
+    name: TFSec Security Scan
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          version: ${{ env.TFSEC_VERSION }}
+          soft_fail: false
+          format: sarif
+          additional_args: --config-file=.tfsec.yml
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+
+
+  # Job 6: Secrets Scanning
+  secrets-scan:
+    name: Secrets Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+
+      - name: Run detect-secrets
+        run: |
+          detect-secrets scan --baseline .secrets.baseline
+          detect-secrets audit .secrets.baseline
+
+  # Job 7: Terraform Docs Check
+  terraform-docs:
+    name: Terraform Docs Check
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Render terraform docs
+        uses: terraform-docs/gh-actions@v1.1.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: false
+          fail-on-diff: true
+
+  # Job 8: Cost Estimation
+  cost-estimation:
+    name: Cost Estimation
+    runs-on: ubuntu-latest
+    needs: terraform-validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Generate Infracost cost estimate baseline
+        if: github.event_name == 'pull_request'
+        run: |
+          infracost breakdown --path=. \
+            --format=json \
+            --out-file=/tmp/infracost-base.json
+
+      - name: Generate Infracost diff
+        if: github.event_name == 'pull_request'
+        run: |
+          infracost diff --path=. \
+            --format=json \
+            --compare-to=/tmp/infracost-base.json \
+            --out-file=/tmp/infracost.json
+
+      - name: Post Infracost comment
+        if: github.event_name == 'pull_request'
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+            --repo=$GITHUB_REPOSITORY \
+            --github-token=${{ secrets.GITHUB_TOKEN }} \
+            --pull-request=${{ github.event.pull_request.number }} \
+            --behavior=update
+
+  # Job 9: Terraform Plan
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: [terraform-validate, tflint, tfsec]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color -out=tfplan
+          terraform show -no-color tfplan > plan.txt
+        continue-on-error: true
+
+      - name: Comment Plan on PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('plan.txt', 'utf8');
+            const truncatedPlan = plan.length > 65000 ? plan.substring(0, 65000) + '\n\n... (truncated)' : plan;
+
+            const output = `#### Terraform Plan 📖
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`terraform
+            ${truncatedPlan}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  # Job 10: Summary
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [terraform-fmt, terraform-validate, tflint, tfsec, secrets-scan, terraform-docs]
+    if: always()
+    steps:
+      - name: Check job results
+        run: |
+          echo "Terraform Format: ${{ needs.terraform-fmt.result }}"
+          echo "Terraform Validate: ${{ needs.terraform-validate.result }}"
+          echo "TFLint: ${{ needs.tflint.result }}"
+          echo "TFSec: ${{ needs.tfsec.result }}"
+          echo "Secrets Scan: ${{ needs.secrets-scan.result }}"
+          echo "Terraform Docs: ${{ needs.terraform-docs.result }}"
+
+      - name: All checks passed
+        if: |
+          needs.terraform-fmt.result == 'success' &&
+          needs.terraform-validate.result == 'success' &&
+          needs.tflint.result == 'success' &&
+          needs.tfsec.result == 'success' &&
+          needs.secrets-scan.result == 'success' &&
+          needs.terraform-docs.result == 'success'
+        run: echo "✅ All PR checks passed!"
+
+      - name: Some checks failed
+        if: |
+          needs.terraform-fmt.result != 'success' ||
+          needs.terraform-validate.result != 'success' ||
+          needs.tflint.result != 'success' ||
+          needs.tfsec.result != 'success' ||
+          needs.secrets-scan.result != 'success' ||
+          needs.terraform-docs.result != 'success'
+        run: |
+          echo "❌ Some PR checks failed. Please review the logs above."
+          exit 1

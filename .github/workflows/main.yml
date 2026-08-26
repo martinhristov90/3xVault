@@ -1,0 +1,288 @@
+---
+name: Main Branch
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  security-events: write
+
+env:
+  TERRAFORM_VERSION: '1.9.0'
+  TFLINT_VERSION: 'v0.50.0'
+  TFSEC_VERSION: 'v1.28.0'
+
+jobs:
+  # Job 1: Terraform Format Check
+  terraform-fmt:
+    name: Terraform Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+  # Job 2: Terraform Validate
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    strategy:
+      matrix:
+        directory:
+          - '.'
+          - 'modules/module_us'
+          - 'modules/module_eu'
+          - 'modules/module_ap'
+          - 'modules/sub-modules/vault_cluster'
+          - 'modules/sub-modules/vpc_peering'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+        working-directory: ${{ matrix.directory }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ matrix.directory }}
+
+  # Job 3: TFLint
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache TFLint plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+
+      - name: Initialize TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --recursive --format=compact
+
+  # Job 4: TFSec Security Scan
+  tfsec:
+    name: TFSec Security Scan
+    runs-on: ubuntu-latest
+    needs: terraform-fmt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          version: ${{ env.TFSEC_VERSION }}
+          soft_fail: false
+          format: sarif
+          additional_args: --config-file=.tfsec.yml
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+
+  # Job 6: Secrets Scanning
+  secrets-scan:
+    name: Secrets Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+
+      - name: Run detect-secrets
+        run: |
+          detect-secrets scan --baseline .secrets.baseline
+          detect-secrets audit .secrets.baseline
+
+  # Job 7: Generate and Update Documentation
+  terraform-docs:
+    name: Generate Terraform Docs
+    runs-on: ubuntu-latest
+    needs: terraform-validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Render terraform docs
+        uses: terraform-docs/gh-actions@v1.1.0
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: true
+          git-commit-message: "docs: update terraform documentation [skip ci]"
+
+  # Job 8: Integration Tests (if configured)
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [terraform-validate, tflint, tfsec]
+    if: false  # Enable when tests are ready
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Run Integration Tests
+        run: |
+          cd test
+          go test -v -timeout 60m ./...
+
+  # Job 9: Security Audit Summary
+  security-audit:
+    name: Security Audit Summary
+    runs-on: ubuntu-latest
+    needs: [tfsec, secrets-scan]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Security Summary
+        run: |
+          echo "# Security Audit Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- TFSec: ${{ needs.tfsec.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Secrets Scan: ${{ needs.secrets-scan.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.tfsec.result }}" == "success" && "${{ needs.secrets-scan.result }}" == "success" ]]; then
+            echo "✅ All security scans passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some security scans failed. Please review the logs." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Job 10: Notify on Failure
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [terraform-fmt, terraform-validate, tflint, tfsec, secrets-scan]
+    if: failure()
+    steps:
+      - name: Create Issue on Failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `CI Failed on Main Branch - ${context.sha.substring(0, 7)}`;
+            const body = `
+            ## CI Pipeline Failed
+
+            **Commit**: ${context.sha}
+            **Author**: @${context.actor}
+            **Workflow**: ${context.workflow}
+            **Run**: ${context.runNumber}
+
+            ### Failed Jobs
+            - Terraform Format: ${{ needs.terraform-fmt.result }}
+            - Terraform Validate: ${{ needs.terraform-validate.result }}
+            - TFLint: ${{ needs.tflint.result }}
+            - TFSec: ${{ needs.tfsec.result }}
+            - Secrets Scan: ${{ needs.secrets-scan.result }}
+
+            [View Workflow Run](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            `;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['ci-failure', 'bug']
+            });
+
+  # Job 11: Success Summary
+  success-summary:
+    name: Success Summary
+    runs-on: ubuntu-latest
+    needs: [terraform-fmt, terraform-validate, tflint, tfsec, secrets-scan, terraform-docs]
+    if: success()
+    steps:
+      - name: Create Success Summary
+        run: |
+          echo "# ✅ Main Branch CI Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All checks passed successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Completed Checks" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Terraform Format" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Terraform Validate" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ TFLint" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ TFSec Security Scan" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Secrets Scanning" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Documentation Updated" >> $GITHUB_STEP_SUMMARY
