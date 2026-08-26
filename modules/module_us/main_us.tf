@@ -18,6 +18,7 @@ module "vault-cluster-us" {
   vault_version     = var.vault_version
   vault_ec2_type    = var.vault_ec2_type
   use_private_image = var.use_private_image
+  license_reporting_toggle = var.license_reporting_toggle
 
   providers = {
     aws = aws.us-provider

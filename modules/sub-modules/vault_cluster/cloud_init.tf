@@ -22,11 +22,12 @@ data "cloudinit_config" "myhost" {
   part {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/../templates/vault_config/vault.sh.tmpl", {
-      kms_key_id = aws_kms_key.vault.id
-      region     = var.region
-      log_level  = var.log_level
-      node_id    = "vault-${var.region}-${each.key}-${var.random_id}"
-      join_to    = cidrhost(data.aws_subnet.subnets[element(tolist(local.availability_zones_sliced), 0)].cidr_block, 5)
+      kms_key_id               = aws_kms_key.vault.id
+      region                   = var.region
+      log_level                = var.log_level
+      node_id                  = "vault-${var.region}-${each.key}-${var.random_id}"
+      join_to                  = cidrhost(data.aws_subnet.subnets[element(tolist(local.availability_zones_sliced), 0)].cidr_block, 5)
+      license_reporting_toggle = tostring(var.license_reporting_toggle)
     })
   }
   # Uploading the Vault TLS cert and private key for the listner and license for legacy licensing and autoload license

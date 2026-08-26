@@ -35,3 +35,9 @@ variable "use_private_image" {
   description = "Enables the usage of proprietary image (if accessible) rather than Ubuntu, used for testing within organization"
   type        = bool
 }
+
+variable "license_reporting_toggle" {
+  description = "Enables/Disables the auto reporting feature of Vault, mostly required to be true, when cluster is used for development or short lived projects"
+  type        = bool
+  default     = true
+}
