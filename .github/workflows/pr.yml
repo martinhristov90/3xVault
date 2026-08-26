@@ -99,7 +99,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache TFLint plugins
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
