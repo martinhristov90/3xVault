@@ -27,9 +27,9 @@
 
   ```
   clusters = {
-    "us" = { region = "us-east-2", vpc_cidr = "192.168.0.0/24", vault_version = "1.21.3+ent-1", vault_ec2_type = "small", use_private_image = false },
-    "ap" = { region = "ap-south-1", vpc_cidr = "192.168.100.0/24", vault_version = "1.21.3+ent-1", vault_ec2_type = "small", use_private_image = false },
-    "eu" = { region = "eu-west-1", vpc_cidr = "192.168.200.0/24", vault_version = "1.21.3+ent-1", vault_ec2_type = "small", use_private_image = false }
+    "us" = { region = "us-east-2", vpc_cidr = "192.168.0.0/24", vault_version = "2.0.4+ent-1", vault_ec2_type = "small", use_private_image = true, license_reporting_toggle = false },
+    "ap" = { region = "ap-south-1", vpc_cidr = "192.168.100.0/24", vault_version = "2.0.4+ent-1", vault_ec2_type = "small", use_private_image = true, license_reporting_toggle = false },
+    "eu" = { region = "eu-west-1", vpc_cidr = "192.168.200.0/24", vault_version = "2.0.4+ent-1", vault_ec2_type = "small", use_private_image = true, license_reporting_toggle = false }
   }
   # For all versions of "vault-enterprise" package, run "apt list -a vault-enterprise" after installing the Hashicorp repo.
   # The "vault_ec2_type" variable should be one of the following types - small or large. Small corresponds to "t3.small" while "large" corresponds to "t3.large".
@@ -42,6 +42,7 @@
   |vault_version|1.21.3+ent-1|Version of Vault|
   |vault_ec2_type|small|Size of EC2 instance to be used, `small` for `t3.small` or `large` for `t3.large`|
   |use_private_image|false|Whether to use a EDR enabled image, by default `false` it will use the official Ubuntu 22.04|
+  |license_reporting_toggle|true|Enables or disables the report utilization feature of Vault, usually set to true for production use, by default the value of the variable is `false` (disabled)|
 ### Example SSH commands:
 
   ```bash
@@ -242,6 +243,7 @@
   - [x] Fix permissions of `/home/ubuntu`, so it belongs to `ubuntu` user
   - [x] Create VPC peering between DR and PR regions, in case of DR being promoted
   - [x] Have separete directory for `vault` user, root keys are stored there. Those should be removed from production use!!!
+  - [x] Provide a toggle to enable/disable "License utilization reporting" feature
 ### Contributing:
   - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
   - PRs are welcome !

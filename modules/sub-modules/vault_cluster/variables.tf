@@ -57,3 +57,9 @@ variable "use_private_image" {
   type        = bool
   default     = false
 }
+
+variable "license_reporting_toggle" {
+  description = "Enables/Disables the auto reporting feature of Vault, mostly required to be true, when cluster is used for development or short lived projects"
+  type        = bool
+  default     = true
+}
