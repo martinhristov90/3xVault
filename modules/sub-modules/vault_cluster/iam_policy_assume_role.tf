@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "assume_role_aws_secrets" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${aws_iam_role.vault_server_role.arn}"]
+      identifiers = [aws_iam_role.vault_server_role.arn]
     }
   }
 }
