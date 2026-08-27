@@ -1,6 +1,7 @@
 # This file creates a managed policy to be used by the Vault server and its AWS auth method - IAM type
 
 # Policy document (only in TF) that gives permissions to use AWS auth method
+# tfsec:ignore:aws-iam-no-policy-wildcards - These IAM actions require wildcard resources as they are account-level operations
 data "aws_iam_policy_document" "vault_aws_auth" {
   statement {
     sid       = "vaultPolicyDocumentVaultAWSAuth"

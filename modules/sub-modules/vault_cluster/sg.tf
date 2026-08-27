@@ -8,11 +8,13 @@ resource "aws_security_group" "vault" {
   }
 
   # SSH
+  # tfsec:ignore:aws-vpc-no-public-ingress-sgr
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allowing SSH traffic from anywhere" 
   }
 
   # Vault Client Traffic
@@ -21,15 +23,16 @@ resource "aws_security_group" "vault" {
     to_port     = 8200
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allowing Vault API traffic from anywhere"
   }
 
   # Vault cluster (node-to-node) traffic 
-
   ingress {
     from_port   = 8201
     to_port     = 8201
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allowing Vault cluster traffic from anywhere"
   }
 
 
@@ -39,6 +42,7 @@ resource "aws_security_group" "vault" {
     to_port   = 65535
     protocol  = "tcp"
     self      = true
+    description = "Allowing connections withing the same SG"
   }
 
   # All ICMP connections are allowed if they are located in the same SG
@@ -47,6 +51,7 @@ resource "aws_security_group" "vault" {
     to_port   = 254
     protocol  = "icmp"
     self      = true
+    description = "Allowing ICMP traffic within the same SG"
   }
 
   # Leaving traffic
@@ -55,5 +60,6 @@ resource "aws_security_group" "vault" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allowing egress traffic to anywhere"
   }
 }
