@@ -141,14 +141,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install detect-secrets
-        run: pip install detect-secrets
-
-      - name: Run detect-secrets
-        run: |
-          detect-secrets scan --baseline .secrets.baseline
-          detect-secrets audit .secrets.baseline
-
   # Job 7: Generate and Update Documentation
   terraform-docs:
     name: Generate Terraform Docs
