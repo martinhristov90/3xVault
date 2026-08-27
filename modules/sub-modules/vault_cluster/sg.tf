@@ -14,7 +14,7 @@ resource "aws_security_group" "vault" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Allowing SSH traffic from anywhere" 
+    description = "Allowing SSH traffic from anywhere"
   }
 
   # Vault Client Traffic
@@ -38,19 +38,19 @@ resource "aws_security_group" "vault" {
 
   # All TCP connections are allowed if they are located in the same SG
   ingress {
-    from_port = 0
-    to_port   = 65535
-    protocol  = "tcp"
-    self      = true
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    self        = true
     description = "Allowing connections withing the same SG"
   }
 
   # All ICMP connections are allowed if they are located in the same SG
   ingress {
-    from_port = 0
-    to_port   = 254
-    protocol  = "icmp"
-    self      = true
+    from_port   = 0
+    to_port     = 254
+    protocol    = "icmp"
+    self        = true
     description = "Allowing ICMP traffic within the same SG"
   }
 
