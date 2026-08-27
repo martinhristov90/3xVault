@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: "terraform"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "semiannually"
       day: "monday"
       time: "09:00"
       timezone: "Europe/Sofia"
@@ -22,14 +22,14 @@ updates:
       - "dependencies"
       - "terraform"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore(deps-terraform)"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
     rebase-strategy: "auto"
     ignore:
       # Ignore major version updates for stability
-      - dependency-name: "*"
+      - dependency-name: "*" # Dependency name, for example AWS provider
         update-types: ["version-update:semver-major"]
 
   # GitHub Actions updates
@@ -49,12 +49,12 @@ updates:
       - "dependencies"
       - "github-actions"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore(deps-github-actions)"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
 
-  # Go modules (for tests)
+  # Go modules (for tests) in case Terratest is implemented
   - package-ecosystem: "gomod"
     directory: "/test"
     schedule:
@@ -79,25 +79,3 @@ updates:
       # Ignore major version updates for stability
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-
-  # Python dependencies (for pre-commit hooks)
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Europe/Sofia"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "martinhristov90"
-    assignees:
-      - "martinhristov90"
-    labels:
-      - "dependencies"
-      - "python"
-    commit-message:
-      prefix: "chore(deps)"
-      include: "scope"
-    pull-request-branch-name:
-      separator: "/"
