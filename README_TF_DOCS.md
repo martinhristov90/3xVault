@@ -76,7 +76,7 @@ module "inter_vpc_peering" {
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~>1.16.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.67.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2.9.0 |
@@ -88,13 +88,13 @@ module "inter_vpc_peering" {
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
+|------|---------|
+| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.9.0 |
 
 ## Modules
 
 | Name | Source | Version |
-| ---- | ------ | ------- |
+|------|--------|---------|
 | <a name="module_inter_vpc_peering"></a> [inter\_vpc\_peering](#module\_inter\_vpc\_peering) | ./modules/sub-modules/vpc_peering | n/a |
 | <a name="module_vault-cluster-ap"></a> [vault-cluster-ap](#module\_vault-cluster-ap) | ./modules/module_ap | n/a |
 | <a name="module_vault-cluster-eu"></a> [vault-cluster-eu](#module\_vault-cluster-eu) | ./modules/module_eu | n/a |
@@ -104,19 +104,19 @@ module "inter_vpc_peering" {
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [random_pet.env](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
-| <a name="input_clusters"></a> [clusters](#input\_clusters) | Defines all Vault clusters, map of custom objects | <pre>map(object({<br/>    region            = string<br/>    vpc_cidr          = string<br/>    vault_version     = string<br/>    vault_ec2_type    = string<br/>    use_private_image = bool<br/>  }))</pre> | n/a | yes |
+|------|-------------|------|---------|:--------:|
+| <a name="input_clusters"></a> [clusters](#input\_clusters) | Defines all Vault clusters, map of custom objects | <pre>map(object({<br>    region            = string<br>    vpc_cidr          = string<br>    vault_version     = string<br>    vault_ec2_type    = string<br>    use_private_image = bool<br>  }))</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_current-env-id"></a> [current-env-id](#output\_current-env-id) | Outputs the random ID used for particular deployment of the environment, useful for enabling S3 snapshots |
 | <a name="output_vault-cluster-ap-public-ips"></a> [vault-cluster-ap-public-ips](#output\_vault-cluster-ap-public-ips) | Prints public IPs for the nodes in the AP cluster |
 | <a name="output_vault-cluster-eu-public-ips"></a> [vault-cluster-eu-public-ips](#output\_vault-cluster-eu-public-ips) | Prints public IPs for the nodes in the EU cluster |
