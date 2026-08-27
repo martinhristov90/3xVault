@@ -157,7 +157,7 @@ jobs:
         uses: terraform-docs/gh-actions@v1.1.0
         with:
           working-dir: .
-          output-file: README.md
+          output-file: README_TF_DOCS.md
           output-method: inject
           git-push: true
           git-commit-message: "docs: update terraform documentation [skip ci]"

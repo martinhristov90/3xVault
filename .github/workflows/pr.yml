@@ -176,7 +176,7 @@ jobs:
         uses: terraform-docs/gh-actions@v1.1.0
         with:
           working-dir: .
-          output-file: README-TF-DOCS.md
+          output-file: README_TF_DOCS.md
           output-method: inject
           git-push: false
           fail-on-diff: true
