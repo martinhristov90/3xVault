@@ -226,7 +226,6 @@ jobs:
             --github-token=${{ secrets.GITHUB_TOKEN }} \
             --pull-request=${{ github.event.pull_request.number }} \
             --behavior=update
-            --behavior=update
 
   # Job 10: Summary
   pr-summary:
