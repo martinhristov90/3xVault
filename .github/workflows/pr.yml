@@ -183,11 +183,12 @@ jobs:
           git-push: true
           fail-on-diff: false
 
-  # Job 8: Cost Estimation
+  # Job 8: Cost Estimation (optional)
   cost-estimation:
     name: Cost Estimation
     runs-on: ubuntu-latest
     needs: terraform-validate
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -224,6 +225,7 @@ jobs:
             --repo=$GITHUB_REPOSITORY \
             --github-token=${{ secrets.GITHUB_TOKEN }} \
             --pull-request=${{ github.event.pull_request.number }} \
+            --behavior=update
             --behavior=update
 
   # Job 10: Summary
