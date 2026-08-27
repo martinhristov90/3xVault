@@ -18,7 +18,7 @@ permissions:
   security-events: write
 
 env:
-  TERRAFORM_VERSION: '1.9.0'
+  TERRAFORM_VERSION: '1.16.0'
   TFLINT_VERSION: 'v0.50.0'
   TFSEC_VERSION: 'v1.28.0'
 

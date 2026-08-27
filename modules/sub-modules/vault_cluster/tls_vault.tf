@@ -18,7 +18,7 @@ resource "tls_cert_request" "csr_vault_server" {
   }
 
   ip_addresses = [
-    "${cidrhost(data.aws_subnet.subnets[each.key].cidr_block, 5)}", # Private IP of EC2, it is always the 5th IP in the subnet
+    cidrhost(data.aws_subnet.subnets[each.key].cidr_block, 5), # Private IP of EC2, it is always the 5th IP in the subnet
     "127.0.0.1",
   ]
 

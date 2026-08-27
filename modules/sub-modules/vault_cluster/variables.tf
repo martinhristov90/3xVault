@@ -1,4 +1,5 @@
 variable "vpc_cidr" {
+  type        = string
   description = "CIDR of the VPC"
 }
 
@@ -13,19 +14,23 @@ variable "region" {
 }
 
 variable "log_level" {
+  type        = string
   default     = "DEBUG"
   description = "Sets Vault log level"
 }
 
 variable "vault_common_ca_cert" {
+  type        = string
   description = "CA certificate to sign Vault server certificates"
 }
 
 variable "vault_common_ca_private_key" {
+  type        = string
   description = "CA private used to sign Vault server certificates"
 }
 
 variable "vault_license" {
+  type        = string
   description = "Vault license"
 
   validation {
@@ -35,6 +40,7 @@ variable "vault_license" {
 }
 
 variable "vault_version" {
+  type        = string
   description = "Version of the Vault binary version to be used"
   validation {
     condition     = can(regex("^([0-9]\\.[0-9]{1,2}?\\.[0-9]{1,2}?\\+ent\\-[0-9])$", var.vault_version))
