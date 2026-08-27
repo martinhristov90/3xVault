@@ -114,11 +114,11 @@ jobs:
           additional_args: --config-file=.tfsec.yml
       
       # Currently skipping the upload of SERIF file in the repo
-      #- name: Upload SARIF file
-      #  uses: github/codeql-action/upload-sarif@v3
-      #  if: always()
-      #  with:
-      #    sarif_file: results.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
 
   # Job 6: Secrets Scanning
   secrets-scan:
@@ -161,39 +161,6 @@ jobs:
           output-method: inject
           git-push: true
           git-commit-message: "docs: update terraform documentation [skip ci]"
-
-  # Job 8: Integration Tests (if configured)
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    needs: [terraform-validate, tflint, tfsec]
-    if: false  # Enable when tests are ready
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-          terraform_wrapper: false
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Run Integration Tests
-        run: |
-          cd test
-          go test -v -timeout 60m ./...
 
   # Job 9: Security Audit Summary
   security-audit:
