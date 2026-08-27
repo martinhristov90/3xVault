@@ -1,0 +1,129 @@
+# Gitleaks configuration for 3xVault
+# https://github.com/gitleaks/gitleaks
+
+title = "3xVault Gitleaks Configuration"
+
+[extend]
+# useDefault will extend the base configuration with the default gitleaks config:
+# https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[allowlist]
+description = "Allowlist for 3xVault repository"
+
+# Paths to ignore
+paths = [
+  '''\.terraform/''',
+  '''\.git/''',
+  '''terraform\.tfstate''',
+  '''terraform\.tfstate\.backup''',
+  '''\.terraform\.lock\.hcl''',
+  '''go\.sum''',
+  '''go\.mod''',
+  '''package-lock\.json''',
+  '''yarn\.lock''',
+]
+
+# Regexes to ignore
+regexes = [
+  # Ignore example/dummy values
+  '''example\.com''',
+  '''EXAMPLE''',
+  '''dummy''',
+  '''DUMMY''',
+  '''test-key''',
+  '''TEST_KEY''',
+  # Ignore terraform variable references
+  '''\$\{var\.''',
+  '''\$\{local\.''',
+  '''\$\{data\.''',
+  # Ignore AWS ARN patterns (not secrets)
+  '''arn:aws:iam::\d{12}:''',
+  # Ignore common false positives
+  '''AKIAIOSFODNN7EXAMPLE''',
+  '''wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY''',
+]
+
+# Commits to ignore (if needed)
+commits = []
+
+# Stop words that indicate a false positive
+stopwords = [
+  "example",
+  "test",
+  "dummy",
+  "sample",
+  "placeholder",
+]
+
+[[rules]]
+id = "vault-license"
+description = "Vault Enterprise License"
+regex = '''license_vault\.txt'''
+path = '''license_vault\.txt'''
+
+[[rules]]
+id = "private-keys"
+description = "Private SSH Keys"
+regex = '''private_keys/private.*'''
+path = '''private_keys/private.*'''
+
+[[rules]]
+id = "terraform-tfvars"
+description = "Terraform variable files that may contain sensitive data"
+regex = '''\.tfvars$'''
+path = '''\.tfvars$'''
+
+# Custom rules for AWS-specific secrets
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''(?i)(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["key", "AWS"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)aws(.{0,20})?(?-i)['\"][0-9a-zA-Z\/+]{40}['\"]'''
+tags = ["key", "AWS"]
+
+[[rules]]
+id = "aws-account-id"
+description = "AWS Account ID"
+regex = '''(?i)aws(.{0,20})?account(.{0,20})?['\"]?[0-9]{12}['\"]?'''
+tags = ["key", "AWS"]
+
+# HashiCorp Vault specific
+[[rules]]
+id = "vault-token"
+description = "HashiCorp Vault Token"
+regex = '''(?i)vault(.{0,20})?token(.{0,20})?['\"][a-z0-9]{24,}['\"]'''
+tags = ["key", "Vault"]
+
+[[rules]]
+id = "vault-root-token"
+description = "HashiCorp Vault Root Token"
+regex = '''(?i)root(.{0,20})?token(.{0,20})?['\"][a-z0-9-]{36}['\"]'''
+tags = ["key", "Vault"]
+
+# Generic secrets
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api|key|token|secret|password)(.{0,20})?['\"][0-9a-zA-Z\-_]{32,}['\"]'''
+tags = ["key", "API", "generic"]
+
+# Private keys
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----'''
+tags = ["key", "private"]
+
+# Entropy-based detection
+[[rules]]
+id = "high-entropy-string"
+description = "High Entropy String (potential secret)"
+regex = '''[a-zA-Z0-9+/]{40,}'''
+entropy = 4.5
+tags = ["entropy"]

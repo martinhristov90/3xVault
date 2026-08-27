@@ -1,0 +1,53 @@
+# tfsec configuration for 3xVault
+# https://aquasecurity.github.io/tfsec/
+
+# Minimum severity level to report
+minimum_severity: MEDIUM
+
+# Exclude specific checks
+exclude:
+  # AWS001: S3 Bucket has an ACL defined which allows public access
+  # Justification: Some buckets may need public access for specific use cases
+  # - aws-s3-enable-bucket-logging
+  # AWS002: S3 Bucket does not have logging enabled
+  # Justification: Logging will be enabled in production environments
+  # - aws-s3-enable-bucket-logging
+
+  # AWS017: Unencrypted S3 bucket
+  # Justification: All buckets should be encrypted
+  # - aws-s3-enable-bucket-encryption
+
+# Exclude specific directories
+exclude_paths:
+  - .terraform/**
+  - **/.terraform/**
+  - examples/**/.terraform/**
+
+# Custom checks configuration
+severity_overrides:
+  # Override severity for specific checks
+  aws-vpc-no-public-ingress-sgr: ERROR
+  aws-ec2-no-public-ip: HIGH
+  aws-iam-no-policy-wildcards: HIGH
+  aws-kms-auto-rotate-keys: HIGH
+  aws-s3-enable-bucket-encryption: CRITICAL
+  aws-s3-enable-versioning: HIGH
+  aws-cloudtrail-enable-log-validation: HIGH
+
+# Include passed checks in output
+include_passed: false
+
+# Include ignored checks in output
+include_ignored: false
+
+# Exclude downloaded modules from scan
+exclude_downloaded_modules: true
+
+# Format output
+format: default
+
+# Output options
+soft_fail: false
+
+# Workspace configuration
+workspace: default

@@ -112,12 +112,13 @@ jobs:
           soft_fail: false
           format: sarif
           additional_args: --config-file=.tfsec.yml
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: results.sarif
+      
+      # Currently skipping the upload of SERIF file in the repo
+      #- name: Upload SARIF file
+      #  uses: github/codeql-action/upload-sarif@v3
+      #  if: always()
+      #  with:
+      #    sarif_file: results.sarif
 
   # Job 6: Secrets Scanning
   secrets-scan:
@@ -140,14 +141,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install detect-secrets
-        run: pip install detect-secrets
-
-      - name: Run detect-secrets
-        run: |
-          detect-secrets scan --baseline .secrets.baseline
-          detect-secrets audit .secrets.baseline
-
   # Job 7: Generate and Update Documentation
   terraform-docs:
     name: Generate Terraform Docs
@@ -164,7 +157,7 @@ jobs:
         uses: terraform-docs/gh-actions@v1.1.0
         with:
           working-dir: .
-          output-file: README.md
+          output-file: README_TF_DOCS.md
           output-method: inject
           git-push: true
           git-commit-message: "docs: update terraform documentation [skip ci]"

@@ -2,6 +2,7 @@
 
 
 # Policy document (only in TF) that gives needed permissions for AWS secrets engine
+# tfsec:ignore:aws-iam-no-policy-wildcards - Wildcard required for Vault AWS secrets engine to manage dynamic IAM users
 data "aws_iam_policy_document" "vault_aws_secret" {
   statement {
     sid       = "vaultPolicyDocumentVaultAWSSecret"

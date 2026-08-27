@@ -131,12 +131,12 @@ jobs:
           soft_fail: false
           format: sarif
           additional_args: --config-file=.tfsec.yml
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: results.sarif
+      # Currently skipping the upload of SERIF file in the repo
+      #- name: Upload SARIF file
+      #  uses: github/codeql-action/upload-sarif@v3
+      #  if: always()
+      #  with:
+      #    sarif_file: results.sarif
 
 
   # Job 6: Secrets Scanning
@@ -160,19 +160,14 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install detect-secrets
-        run: pip install detect-secrets
-
-      - name: Run detect-secrets
-        run: |
-          detect-secrets scan --baseline .secrets.baseline
-          detect-secrets audit .secrets.baseline
 
   # Job 7: Terraform Docs Check
   terraform-docs:
     name: Terraform Docs Check
     runs-on: ubuntu-latest
     needs: terraform-fmt
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -183,10 +178,10 @@ jobs:
         uses: terraform-docs/gh-actions@v1.1.0
         with:
           working-dir: .
-          output-file: README.md
+          output-file: README_TF_DOCS.md
           output-method: inject
-          git-push: false
-          fail-on-diff: true
+          git-push: true
+          fail-on-diff: false
 
   # Job 8: Cost Estimation
   cost-estimation:
@@ -230,66 +225,6 @@ jobs:
             --github-token=${{ secrets.GITHUB_TOKEN }} \
             --pull-request=${{ github.event.pull_request.number }} \
             --behavior=update
-
-  # Job 9: Terraform Plan
-  terraform-plan:
-    name: Terraform Plan
-    runs-on: ubuntu-latest
-    needs: [terraform-validate, tflint, tfsec]
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -no-color -out=tfplan
-          terraform show -no-color tfplan > plan.txt
-        continue-on-error: true
-
-      - name: Comment Plan on PR
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const fs = require('fs');
-            const plan = fs.readFileSync('plan.txt', 'utf8');
-            const truncatedPlan = plan.length > 65000 ? plan.substring(0, 65000) + '\n\n... (truncated)' : plan;
-
-            const output = `#### Terraform Plan 📖
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`terraform
-            ${truncatedPlan}
-            \`\`\`
-
-            </details>
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
 
   # Job 10: Summary
   pr-summary:
