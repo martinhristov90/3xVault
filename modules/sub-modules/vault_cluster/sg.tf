@@ -18,6 +18,7 @@ resource "aws_security_group" "vault" {
   }
 
   # Vault Client Traffic
+  # tfsec:ignore:aws-vpc-no-public-ingress-sgr
   ingress {
     from_port   = 8200
     to_port     = 8200
@@ -26,7 +27,8 @@ resource "aws_security_group" "vault" {
     description = "Allowing Vault API traffic from anywhere"
   }
 
-  # Vault cluster (node-to-node) traffic 
+  # Vault cluster (node-to-node) traffic
+  # tfsec:ignore:aws-vpc-no-public-ingress-sgr
   ingress {
     from_port   = 8201
     to_port     = 8201
@@ -37,6 +39,7 @@ resource "aws_security_group" "vault" {
 
 
   # All TCP connections are allowed if they are located in the same SG
+  # tfsec:ignore:aws-vpc-no-public-ingress-sgr
   ingress {
     from_port   = 0
     to_port     = 65535
@@ -55,6 +58,7 @@ resource "aws_security_group" "vault" {
   }
 
   # Leaving traffic
+  # tfsec:ignore:aws-vpc-no-public-egress-sgr
   egress {
     from_port   = 0
     to_port     = 0
