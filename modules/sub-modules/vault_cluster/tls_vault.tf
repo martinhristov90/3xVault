@@ -32,8 +32,8 @@ resource "tls_locally_signed_cert" "vault_cert_sign" {
   for_each = local.availability_zones_sliced
 
   cert_request_pem   = tls_cert_request.csr_vault_server[each.key].cert_request_pem # Provide the CSR
-  ca_private_key_pem = var.vault_common_ca_private_key # CA private key
-  ca_cert_pem        = var.vault_common_ca_cert        # CA cert
+  ca_private_key_pem = var.vault_common_ca_private_key                              # CA private key
+  ca_cert_pem        = var.vault_common_ca_cert                                     # CA cert
 
   validity_period_hours = 3600
 
