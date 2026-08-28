@@ -5,7 +5,7 @@
 
 ```hcl
 # Creating HQ cluster in US
-module "vault-cluster-us" {
+module "vault_cluster_us" {
 
   source = "./modules/module_us"
 
@@ -22,7 +22,7 @@ module "vault-cluster-us" {
 }
 
 # Creating DR cluster in Europe
-module "vault-cluster-eu" {
+module "vault_cluster_eu" {
 
   source = "./modules/module_eu"
 
@@ -39,7 +39,7 @@ module "vault-cluster-eu" {
 }
 
 # Creating PR cluster in Asia
-module "vault-cluster-ap" {
+module "vault_cluster_ap" {
 
   source = "./modules/module_ap"
 
@@ -69,7 +69,7 @@ module "inter_vpc_peering" {
     aws.pr_provider = aws.pr_provider
   }
 
-  depends_on = [module.vault-cluster-ap, module.vault-cluster-eu, module.vault-cluster-us]
+  depends_on = [module.vault_cluster_ap, module.vault_cluster_eu, module.vault_cluster_us]
 }
 ```
 
@@ -96,9 +96,9 @@ module "inter_vpc_peering" {
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_inter_vpc_peering"></a> [inter\_vpc\_peering](#module\_inter\_vpc\_peering) | ./modules/sub-modules/vpc_peering | n/a |
-| <a name="module_vault-cluster-ap"></a> [vault-cluster-ap](#module\_vault-cluster-ap) | ./modules/module_ap | n/a |
-| <a name="module_vault-cluster-eu"></a> [vault-cluster-eu](#module\_vault-cluster-eu) | ./modules/module_eu | n/a |
-| <a name="module_vault-cluster-us"></a> [vault-cluster-us](#module\_vault-cluster-us) | ./modules/module_us | n/a |
+| <a name="module_vault_cluster_ap"></a> [vault\_cluster\_ap](#module\_vault\_cluster\_ap) | ./modules/module_ap | n/a |
+| <a name="module_vault_cluster_eu"></a> [vault\_cluster\_eu](#module\_vault\_cluster\_eu) | ./modules/module_eu | n/a |
+| <a name="module_vault_cluster_us"></a> [vault\_cluster\_us](#module\_vault\_cluster\_us) | ./modules/module_us | n/a |
 | <a name="module_vault_common_ca"></a> [vault\_common\_ca](#module\_vault\_common\_ca) | ./modules/sub-modules/common_vault_ca | n/a |
 
 ## Resources
@@ -117,8 +117,8 @@ module "inter_vpc_peering" {
 
 | Name | Description |
 |------|-------------|
-| <a name="output_current-env-id"></a> [current-env-id](#output\_current-env-id) | Outputs the random ID used for particular deployment of the environment, useful for enabling S3 snapshots |
-| <a name="output_vault-cluster-ap-public-ips"></a> [vault-cluster-ap-public-ips](#output\_vault-cluster-ap-public-ips) | Prints public IPs for the nodes in the AP cluster |
-| <a name="output_vault-cluster-eu-public-ips"></a> [vault-cluster-eu-public-ips](#output\_vault-cluster-eu-public-ips) | Prints public IPs for the nodes in the EU cluster |
-| <a name="output_vault-cluster-us-public-ips"></a> [vault-cluster-us-public-ips](#output\_vault-cluster-us-public-ips) | Prints public IPs for the nodes in the US cluster |
+| <a name="output_current_env_id"></a> [current\_env\_id](#output\_current\_env\_id) | Outputs the random ID used for particular deployment of the environment, useful for enabling S3 snapshots |
+| <a name="output_vault_cluster_ap_public_ips"></a> [vault\_cluster\_ap\_public\_ips](#output\_vault\_cluster\_ap\_public\_ips) | Prints public IPs for the nodes in the AP cluster |
+| <a name="output_vault_cluster_eu_public_ips"></a> [vault\_cluster\_eu\_public\_ips](#output\_vault\_cluster\_eu\_public\_ips) | Prints public IPs for the nodes in the EU cluster |
+| <a name="output_vault_cluster_us_public_ips"></a> [vault\_cluster\_us\_public\_ips](#output\_vault\_cluster\_us\_public\_ips) | Prints public IPs for the nodes in the US cluster |
 <!-- END_TF_DOCS -->
