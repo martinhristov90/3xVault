@@ -1,11 +1,1 @@
-provider "aws" {
-  alias = "hq_provider"
-}
-
-provider "aws" {
-  alias = "dr_provider"
-}
-
-provider "aws" {
-  alias = "pr_provider"
-}
+# Provider aliases are declared via configuration_aliases in terraform.tf
