@@ -2,12 +2,16 @@
 # tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "raft_snapshot_bucket" {
   bucket        = "raft-snapshot-bucket-${var.region}-${var.random_id}"
-  acl           = "private"
   force_destroy = true
 
   tags = {
     Name = "vault-${var.region}-${var.random_id}"
   }
+}
+
+resource "aws_s3_bucket_acl" "raft_snapshot_bucket" {
+  bucket = aws_s3_bucket.raft_snapshot_bucket.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "raft_snapshot_bucket" {

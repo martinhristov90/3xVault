@@ -3,9 +3,8 @@ resource "tls_private_key" "private_key_vault_ca" {
   algorithm = "RSA"
 }
 
-# Self-signing the CA 
+# Self-signing the CA
 resource "tls_self_signed_cert" "ca_cert" {
-  key_algorithm   = "RSA" # Using RSA
   private_key_pem = tls_private_key.private_key_vault_ca.private_key_pem
   subject {
     common_name  = "Vault CA" # Modern browsers do not look at the CN, SANs are imporatant
