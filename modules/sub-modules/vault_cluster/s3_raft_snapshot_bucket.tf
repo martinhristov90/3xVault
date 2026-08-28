@@ -9,9 +9,12 @@ resource "aws_s3_bucket" "raft_snapshot_bucket" {
   }
 }
 
-resource "aws_s3_bucket_acl" "raft_snapshot_bucket" {
+resource "aws_s3_bucket_ownership_controls" "raft_snapshot_bucket" {
   bucket = aws_s3_bucket.raft_snapshot_bucket.id
-  acl    = "private"
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "raft_snapshot_bucket" {
