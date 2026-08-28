@@ -1,5 +1,5 @@
 # Creating HQ cluster in US
-module "vault-cluster-us" {
+module "vault_cluster_us" {
 
   source = "./modules/module_us"
 
@@ -16,7 +16,7 @@ module "vault-cluster-us" {
 }
 
 # Creating DR cluster in Europe
-module "vault-cluster-eu" {
+module "vault_cluster_eu" {
 
   source = "./modules/module_eu"
 
@@ -33,7 +33,7 @@ module "vault-cluster-eu" {
 }
 
 # Creating PR cluster in Asia
-module "vault-cluster-ap" {
+module "vault_cluster_ap" {
 
   source = "./modules/module_ap"
 
@@ -63,5 +63,5 @@ module "inter_vpc_peering" {
     aws.pr_provider = aws.pr_provider
   }
 
-  depends_on = [module.vault-cluster-ap, module.vault-cluster-eu, module.vault-cluster-us]
+  depends_on = [module.vault_cluster_ap, module.vault_cluster_eu, module.vault_cluster_us]
 }
