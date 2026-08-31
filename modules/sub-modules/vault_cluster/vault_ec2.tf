@@ -4,10 +4,10 @@ resource "aws_instance" "vault" {
 
   for_each = local.availability_zones_sliced
 
-  ami           = var.use_private_image ? data.aws_ami.hc-base-ubuntu-2404[0].id : data.aws_ami.ubuntu[0].id
+  ami           = var.use_private_image ? data.aws_ami.hc_base_ubuntu_2404[0].id : data.aws_ami.ubuntu[0].id
   instance_type = local.vault_ec2_type
   subnet_id     = aws_subnet.public_subnet[each.key].id # Subnet for the EC2 
-  key_name      = aws_key_pair.vault-ssh-key.key_name   # Waiting on the key to be created first
+  key_name      = aws_key_pair.vault_ssh_key.key_name   # Waiting on the key to be created first
 
   vpc_security_group_ids      = [aws_security_group.vault.id]
   associate_public_ip_address = true
@@ -16,7 +16,7 @@ resource "aws_instance" "vault" {
 
   # The intance profile is going to give the EC2 (using meta-data) short-lived STS credentials to access the AWS IAM
   # Credentials are available locally for the EC2 at : http://169.254.169.254/latest/meta-data/iam....
-  iam_instance_profile = aws_iam_instance_profile.vault-instance-profile.id
+  iam_instance_profile = aws_iam_instance_profile.vault_instance_profile.id
 
   tags = {
     Name = "vault-${var.region}-${each.key}-${var.random_id}"

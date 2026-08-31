@@ -22,7 +22,7 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-data "aws_ami" "hc-base-ubuntu-2404" {
+data "aws_ami" "hc_base_ubuntu_2404" {
   # Use this image if var.use_private_image is true
   count = var.use_private_image ? 1 : 0
   filter {

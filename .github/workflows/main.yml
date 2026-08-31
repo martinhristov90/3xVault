@@ -93,7 +93,7 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint
-        run: tflint --recursive --format=compact
+        run: tflint --recursive --format=compact --config="$GITHUB_WORKSPACE/.tflint.hcl"
 
   # Job 4: TFSec Security Scan
   tfsec:

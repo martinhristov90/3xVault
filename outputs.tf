@@ -4,16 +4,16 @@ output "current_env_id" {
 }
 
 output "vault_cluster_us_public_ips" {
-  value       = [for node in module.vault_cluster_us.vault-instance-public-ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
+  value       = [for node in module.vault_cluster_us.vault_instance_public_ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
   description = "Prints public IPs for the nodes in the US cluster"
 }
 
 output "vault_cluster_eu_public_ips" {
-  value       = [for node in module.vault_cluster_eu.vault-instance-public-ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
+  value       = [for node in module.vault_cluster_eu.vault_instance_public_ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
   description = "Prints public IPs for the nodes in the EU cluster"
 }
 
 output "vault_cluster_ap_public_ips" {
-  value       = [for node in module.vault_cluster_ap.vault-instance-public-ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
+  value       = [for node in module.vault_cluster_ap.vault_instance_public_ips : format("Name: %s - IP: %s", node.tags.Name, node.public_ip)]
   description = "Prints public IPs for the nodes in the AP cluster"
 }

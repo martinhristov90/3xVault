@@ -1,6 +1,6 @@
 # Creating SSH to connect to the Vault servers
 # Just a key
-resource "tls_private_key" "vault-ssh-key" {
+resource "tls_private_key" "vault_ssh_key" {
   algorithm = "RSA"
 }
 
@@ -11,7 +11,7 @@ resource "null_resource" "main" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${tls_private_key.vault-ssh-key.private_key_pem}\" > ${path.root}/private_keys/private-${var.region}.key"
+    command = "echo \"${tls_private_key.vault_ssh_key.private_key_pem}\" > ${path.root}/private_keys/private-${var.region}.key"
   }
 
   # Saving it to the local dir, so to be able to connect to Vault server in AWS
@@ -28,7 +28,7 @@ resource "null_resource" "main" {
 }
 
 # Vault server's EC2s are dependent on this key
-resource "aws_key_pair" "vault-ssh-key" {
+resource "aws_key_pair" "vault_ssh_key" {
   key_name   = "vault-${var.region}-${var.random_id}"
-  public_key = tls_private_key.vault-ssh-key.public_key_openssh
+  public_key = tls_private_key.vault_ssh_key.public_key_openssh
 }
