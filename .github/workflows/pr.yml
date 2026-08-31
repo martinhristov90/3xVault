@@ -3,9 +3,6 @@ name: Pull Request
 
 on:
   pull_request:
-    branches:
-      - main
-      - various_fixes
     paths-ignore:
       - '**.md'
       - 'docs/**'

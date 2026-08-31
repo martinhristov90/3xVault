@@ -1,4 +1,4 @@
-## Simple PoC project that creates three Vault clusters in three different AWS regions.
+# Simple PoC project that creates three Vault clusters in three different AWS regions.
 
 -----
 
@@ -6,19 +6,20 @@
 
 
 ### What is it: 
-  This project creates three node Vault environment joined in a Raft (integrated storage) cluster in three different AWS regions.
+  This project creates a three-node Vault environment joined in a Raft (integrated storage) cluster in three different AWS regions.
 
 ### Simple diagram:
 ![Diagram](./diagram/image.png)
 
 ### Prerequisites:
   - Having AWS account with the necessary permissions.
-  - Terraform v0.13.2 or higher
+  - Terraform `~> 1.16.0`
+  - `jq` (required for replication token commands)
 
 ### Usage:
   - Clone the repository: `git clone https://github.com/martinhristov90/3xVault.git`.
   - Change into its directory: `cd 3xVault`.
-  - Create `terraform.tfvars` file, example of how it should look like can be found below. While creating `terraform.tfvars` file specify Vault version newer than 1.6.0, so "Integrated Storage Cloud Auto Join" is available.
+  - Create `terraform.tfvars` file, example of how it should look can be found below. While creating `terraform.tfvars` file specify Vault version newer than 1.6.0, so "Integrated Storage Cloud Auto Join" is available.
   - Put your Vault enterprise license in a file named `license_vault.txt` in the root directory of this project.
   - Initialize Terraform providers: `terraform init`.
   - Execute Terraform plan and apply: `terraform plan` and `terraform apply`, the IPs of all Vault nodes are printed as Terraform outputs.
@@ -36,12 +37,12 @@
   ```
 ### Variables chart in `clusters` object:
   | Variable | Example | Meaning |
-  | --- | - | --- |
+  | --- | --- | --- |
   |region|eu-central-1|Region for deployment of the cluster|
   |vpc_cidr|192.168.100.0/24|VPC CIDR to be used for the particular cluster|
   |vault_version|1.21.3+ent-1|Version of Vault|
   |vault_ec2_type|small|Size of EC2 instance to be used, `small` for `t3.small` or `large` for `t3.large`|
-  |use_private_image|false|Whether to use a EDR enabled image, by default `false` it will use the official Ubuntu 22.04|
+  |use_private_image|false|Whether to use an EDR-enabled image, by default `false` it will use the official Ubuntu 22.04|
 ### Example SSH commands:
 
   ```bash
@@ -57,19 +58,19 @@
 - Use the `private-us-east-2.key` key to connect to the `us-east-2` region (or other region that is configured by `terraform.tfvars` file): 
 
   ```
-  ssh -i private_keys/private-us-east-2.key ubuntu@IP_ADDRESS_ACTIVE_NODE`
+  ssh -i private_keys/private-us-east-2.key ubuntu@IP_ADDRESS_ACTIVE_NODE
   ```
 
-- Enable PR(ap-south-1 region) and DR(eu-west-1 region) replication in primary mode (the Vault token is pre-configured):
+- Enable PR (ap-south-1 region) and DR (eu-west-1 region) replication in primary mode (the Vault token is pre-configured):
 
   ```
   vault write -f sys/replication/performance/primary/enable 
   vault write -f sys/replication/dr/primary/enable
   ```
 
-- Generate secondary tokens for PR(ap-south-1 region) and DR(eu-west-1 region) replications:
+- Generate secondary tokens for PR (ap-south-1 region) and DR (eu-west-1 region) replications:
 
-    * For PR(ap-south-1 region):
+    * For PR (ap-south-1 region):
       ```
       vault write -format=json sys/replication/performance/primary/secondary-token id=pr_secondary_asia | jq -r .wrap_info.token      
       ```
@@ -79,7 +80,7 @@
       eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NvciI6IiIsImFkZHIiOiJodHRwczovLzE5Mi4xNjguMC41OjgyMDAiLCJleHAiOjE2MDMxMTYyNjAsImlhdCI6MTYwMzExNDQ2MCwianRpIjoicy55OWtXUHRZTVJtMU9lczRQaEdjcnk4MkIiLCJuYmYiOjE2MDMxMTQ0NTUsInR5cGUiOiJ3cmFwcGluZyJ9.ANmspVajd3a3acxxxKSwjQNsTxms4zlM4Acbc-4F0Qh3T0ofoEwVu7KFN68OTJ2OxDAQ7d4LI_LOQbV1oG2Y8alBAWrGWyv3OPUQftA0h5yrTzer4ZLVqIwdik9cjzooJhkKtsQibWGioY48vxiaVpDIQWxGzwoCvFM2tOi8FD91BNYu
       ```
 
-    * For DR(eu-west-1 region):
+    * For DR (eu-west-1 region):
       ```
       vault write -format=json sys/replication/dr/primary/secondary-token id=dr_secondary_europe | jq -r .wrap_info.token
       ```
@@ -90,7 +91,7 @@
       ```
       Take a note of the generated tokens, they are good for 30 minutes.
 
-- Enable PR replication on the secondary side in `ap-south` region:
+- Enable PR replication on the secondary side in `ap-south-1` region:
 
   * Login to the node with:
     ```
@@ -107,7 +108,7 @@
     vault read -format=json sys/replication/performance/status | jq -r .data.state
     ```
 
-- Enable DR replication on the secondary side in `eu-central` region:
+- Enable DR replication on the secondary side in `eu-west-1` region:
 
   * Login to the node with:
     ```
@@ -143,7 +144,7 @@
 -----
 
 ### Example configuring AWS secrets engine and AWS auth method via local (local on EC2) Terraform:
-- Both of the instances have latest Terraform version installed locally via Cloud-init.
+- All nodes have the latest Terraform version installed locally via Cloud-init.
 - The Terraform configuration for configuring AWS secret engine and AWS auth method is located inside the `/home/ubuntu/_AWS_TF` path by default.
 - To configure the AWS secret engine and AWS auth method via TF:
   * On active nodes for every cluster that is initially the node located in `1a` availability zone, for example `vault-us-east-2-us-east-2a-engaged-dinosaur` node, do:
@@ -242,8 +243,13 @@
   - [x] Fix permissions of `/home/ubuntu`, so it belongs to `ubuntu` user
   - [x] Create VPC peering between DR and PR regions, in case of DR being promoted
   - [x] Have separete directory for `vault` user, root keys are stored there. Those should be removed from production use!!!
+  - [x] Implement `pre-commit` hooks, so they check fmt, tfsec and tflint mainly
+  - [x] Implement GH actions, to perform code verification and secret detection
+
 ### Contributing:
-  - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project. 
-  - PRs are welcome !
+
+  - Special thanks to G.Berchev (https://github.com/berchev) for testing and helping with this project.
+  - PRs are welcome!
+
 ### License:
   - [MIT](https://choosealicense.com/licenses/mit/)
