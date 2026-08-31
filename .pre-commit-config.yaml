@@ -1,0 +1,104 @@
+---
+# Pre-commit hooks configuration for 3xVault
+# Mirrors the checks run in .github/workflows/pr.yml so that local commits
+# pass CI before a PR is opened.
+# See https://pre-commit.com for more information
+
+repos:
+  # ── General file hygiene ───────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # trailing-whitespace disabled: generated files (README_TF_DOCS.md,
+      # .terraform.lock.hcl) produce false positives on every run.
+      #- id: trailing-whitespace
+      #  args: [--markdown-linebreak-ext=md]
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # ── Terraform (mirrors: terraform-fmt, terraform-validate, tflint, tfsec,
+  #               terraform-docs jobs in pr.yml) ──────────────────────────────
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.109.0
+    hooks:
+      # Mirrors: `terraform fmt -check -recursive`
+      - id: terraform_fmt
+        args:
+          - --args=-recursive
+
+      # Mirrors: `terraform init -backend=false && terraform validate`
+      # Runs against root and every module directory that has .tf files.
+      # modules/sub-modules/vpc_peering uses configuration_aliases (provider
+      # injection from the parent) and cannot be validated in isolation —
+      # Terraform 1.16 fails with "Provider configuration not present" for any
+      # module that declares configuration_aliases but has no concrete provider
+      # blocks.  The module is fully validated when the root configuration is
+      # validated, so excluding it here is safe.
+      - id: terraform_validate
+        args:
+          - --hook-config=--retry-once-with-cleanup=true
+        exclude: ^modules/sub-modules/vpc_peering/
+
+      # Mirrors: `tflint --recursive --format=compact` with .tflint.hcl
+      # IMPORTANT !!! Version must match TFLINT_VERSION in .github/workflows/pr.yml and main.yml
+      - id: terraform_tflint
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+          - --args=--recursive
+          - --envs=TFLINT_VERSION=v0.64.0
+      # Mirrors: tfsec-action with --config-file=.tfsec.yml
+      - id: terraform_tfsec
+        args:
+          - --args=--config-file=__GIT_WORKING_DIR__/.tfsec.yml
+          - --args=--exclude-downloaded-modules
+
+      # terraform_docs disabled intentionally: CI (terraform-docs job in pr.yml
+      # and main.yml) auto-generates README_TF_DOCS.md and pushes the result
+      # back to the branch via git-push: true.  Running it locally as well
+      # would cause duplicate commits.  Enable only if you want to pre-generate
+      # docs before pushing and then amend/squash the CI commit away.
+      #- id: terraform_docs
+      #  args:
+      #    - --hook-config=--path-to-file=README_TF_DOCS.md
+      #    - --hook-config=--add-to-existing-file=true
+      #    - --hook-config=--create-file-if-not-exist=true
+
+  # ── Secrets scanning (mirrors: secrets-scan job using gitleaks-action) ─────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      # --config omitted: gitleaks auto-discovers .gitleaks.toml at the repo
+      # root (source-dir lookup), matching the GITLEAKS_CONFIG env-var approach
+      # used in CI.
+      - id: gitleaks
+
+  # ── Markdown linting ────────────────────────────────────────────────────────
+  # NOTE: pr.yml skips **.md via paths-ignore, so markdown failures won't block
+  # CI, but linting locally keeps docs consistent.
+  #- repo: https://github.com/igorshubovych/markdownlint-cli
+  #  rev: v0.39.0
+  #  hooks:
+  #    - id: markdownlint
+  #      args:
+  #        - --config=.markdownlint.json
+  #        - --fix
+
+# ── Global excludes (kept in sync with gitleaks allowlist paths) ─────────────
+exclude: |
+  (?x)^(
+    \.terraform/.*|
+    \.git/.*|
+    terraform\.tfstate.*|
+    \.terraform\.lock\.hcl|
+    private_keys/.*|
+    license_vault.*|
+    .*\.tfvars|
+    crash\.log
+  )$
