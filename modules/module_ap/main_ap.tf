@@ -3,7 +3,7 @@ provider "aws" {
   region = var.region
 }
 
-module "vault-cluster-ap" {
+module "vault_cluster_ap" {
   source = "../sub-modules/vault_cluster"
 
   #Variables

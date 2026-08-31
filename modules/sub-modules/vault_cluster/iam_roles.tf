@@ -14,7 +14,7 @@ resource "aws_iam_role" "vault_server_role" {
 }
 
 # This instance profile is used at launch of EC2, so it can assume the created role, and use it to access the KMS, in order to encrypt and decrypt the Vault seal master key. Also, to provide permissions to AWS secrets engine and AWS auth.
-resource "aws_iam_instance_profile" "vault-instance-profile" {
+resource "aws_iam_instance_profile" "vault_instance_profile" {
   name = "vault-instance-profile-${var.region}-${var.random_id}"
   role = aws_iam_role.vault_server_role.name
 }

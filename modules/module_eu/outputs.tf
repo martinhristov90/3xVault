@@ -1,3 +1,4 @@
-output "vault-instance-public-ips" {
-  value = module.vault-cluster-eu.vault-instance-public-ips
+output "vault_instance_public_ips" {
+  value       = module.vault_cluster_eu.vault_instance_public_ips
+  description = "Public IPs of the EU Vault cluster instances"
 }
