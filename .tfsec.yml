@@ -19,9 +19,9 @@ exclude:
 
 # Exclude specific directories
 exclude_paths:
-  - .terraform/**
-  - **/.terraform/**
-  - examples/**/.terraform/**
+  - ".terraform/**"
+  - "**/.terraform/**"
+  - "examples/**/.terraform/**"
 
 # Custom checks configuration
 severity_overrides:
