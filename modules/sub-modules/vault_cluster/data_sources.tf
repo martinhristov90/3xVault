@@ -50,4 +50,11 @@ data "aws_caller_identity" "current_aws_account" {}
 # Getting the ARN for DemoUser permission boundary policy
 data "aws_iam_policy" "demouser" {
   name = "DemoUser"
+
+  lifecycle {
+    postcondition {
+      condition     = self.arn != ""
+      error_message = "IAM Policy 'DemoUser' was not found in the AWS account. Please create the 'DemoUser' permission boundary policy before deploying."
+    }
+  }
 }
