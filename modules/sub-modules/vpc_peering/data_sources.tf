@@ -1,4 +1,7 @@
 # Getting the Vault VPC id for the HQ region
+# one() is used instead of element(tolist(...), 0) — it asserts exactly one VPC
+# matches the tag filter and errors explicitly if zero or more than one is found
+# (e.g. after a failed destroy left a stale VPC behind).
 data "aws_vpcs" "vpc_id_hq_region" {
   provider = aws.hq_provider
   tags = {
@@ -26,7 +29,7 @@ data "aws_vpcs" "vpc_id_pr_region" {
 # Route tables are created in vault-cluster module
 data "aws_route_table" "route_table_id_hq_region" {
   provider = aws.hq_provider
-  vpc_id   = element(tolist(data.aws_vpcs.vpc_id_hq_region.ids), 0)
+  vpc_id   = one(data.aws_vpcs.vpc_id_hq_region.ids)
 
   filter {
     name   = "tag:Name"
@@ -36,7 +39,7 @@ data "aws_route_table" "route_table_id_hq_region" {
 
 data "aws_route_table" "route_table_id_dr_region" {
   provider = aws.dr_provider
-  vpc_id   = element(tolist(data.aws_vpcs.vpc_id_dr_region.ids), 0)
+  vpc_id   = one(data.aws_vpcs.vpc_id_dr_region.ids)
   filter {
     name   = "tag:Name"
     values = ["vault-${local.dr_vault_region}-${var.random_id}"]
@@ -45,7 +48,7 @@ data "aws_route_table" "route_table_id_dr_region" {
 
 data "aws_route_table" "route_table_id_pr_region" {
   provider = aws.pr_provider
-  vpc_id   = element(tolist(data.aws_vpcs.vpc_id_pr_region.ids), 0)
+  vpc_id   = one(data.aws_vpcs.vpc_id_pr_region.ids)
   filter {
     name   = "tag:Name"
     values = ["vault-${local.pr_vault_region}-${var.random_id}"]

@@ -32,20 +32,3 @@ resource "aws_instance" "vault" {
   user_data_base64 = data.cloudinit_config.myhost[each.key].rendered
 }
 
-# Getting the AWS account id
-
-#data "aws_caller_identity" "current" {}
-#
-## Installing and provisioning Vault with this template file
-#data "template_file" "vault" {
-#  template = file("userdata.tpl")
-#
-#  vars = {
-#    vault_url  = var.vault_url
-#    aws_region = var.aws_region
-#    VAULT_ADDR = "http://127.0.0.1:8200"
-#    aws_account_id = data.aws_caller_identity.current.account_id
-#    create_ami_role_arn = aws_iam_role.create_ami-role.arn
-#  }
-#}
-
