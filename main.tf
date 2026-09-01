@@ -1,7 +1,7 @@
 # Creating HQ cluster in US
 module "vault_cluster_us" {
 
-  source = "./modules/module_us"
+  source = "./modules/sub-modules/vault_cluster"
 
   vault_common_ca_cert        = local.vault_common_ca_cert
   vault_common_ca_private_key = local.vault_common_ca_private_key
@@ -13,12 +13,16 @@ module "vault_cluster_us" {
   vault_version     = var.clusters.us.vault_version
   vault_ec2_type    = var.clusters.us.vault_ec2_type
   use_private_image = var.clusters.us.use_private_image
+
+  providers = {
+    aws = aws.us-provider
+  }
 }
 
 # Creating DR cluster in Europe
 module "vault_cluster_eu" {
 
-  source = "./modules/module_eu"
+  source = "./modules/sub-modules/vault_cluster"
 
   vault_common_ca_cert        = local.vault_common_ca_cert
   vault_common_ca_private_key = local.vault_common_ca_private_key
@@ -30,12 +34,16 @@ module "vault_cluster_eu" {
   vault_version     = var.clusters.eu.vault_version
   vault_ec2_type    = var.clusters.eu.vault_ec2_type
   use_private_image = var.clusters.eu.use_private_image
+
+  providers = {
+    aws = aws.eu-provider
+  }
 }
 
 # Creating PR cluster in Asia
 module "vault_cluster_ap" {
 
-  source = "./modules/module_ap"
+  source = "./modules/sub-modules/vault_cluster"
 
   vault_common_ca_cert        = local.vault_common_ca_cert
   vault_common_ca_private_key = local.vault_common_ca_private_key
@@ -47,6 +55,10 @@ module "vault_cluster_ap" {
   vault_version     = var.clusters.ap.vault_version
   vault_ec2_type    = var.clusters.ap.vault_ec2_type
   use_private_image = var.clusters.ap.use_private_image
+
+  providers = {
+    aws = aws.ap-provider
+  }
 }
 
 # Connecting the clusters together, the DR and PR clusters have no connection.
@@ -58,9 +70,9 @@ module "inter_vpc_peering" {
 
   # Workaround in order `depends_on` to work
   providers = {
-    aws.hq_provider = aws.hq_provider
-    aws.dr_provider = aws.dr_provider
-    aws.pr_provider = aws.pr_provider
+    aws.hq_provider = aws.us-provider
+    aws.dr_provider = aws.eu-provider
+    aws.pr_provider = aws.ap-provider
   }
 
   depends_on = [module.vault_cluster_ap, module.vault_cluster_eu, module.vault_cluster_us]
