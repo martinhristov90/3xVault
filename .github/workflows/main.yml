@@ -48,10 +48,8 @@ jobs:
       matrix:
         directory:
           - '.'
-          - 'modules/module_us'
-          - 'modules/module_eu'
-          - 'modules/module_ap'
           - 'modules/sub-modules/vault_cluster'
+          - 'modules/sub-modules/common_vault_ca'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
