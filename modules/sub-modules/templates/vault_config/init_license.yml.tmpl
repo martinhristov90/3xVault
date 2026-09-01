@@ -8,11 +8,15 @@ touch /home/vault/_vaultSetup/keys.json
 sudo chown -R vault:vault /home/vault/_vaultSetup
 
 echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Initializing Vault..."
-# Wait for Vault to start 
-sleep 1
+until curl -s -o /dev/null https://127.0.0.1:8200/v1/sys/health; do
+  echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Waiting for Vault to be reachable..."
+  sleep 1
+done
 
 vault operator init -format=json -recovery-shares=5 -recovery-threshold=3 > /home/vault/_vaultSetup/keys.json
 
+# Disable trace logging to prevent root token appearing in plaintext in /var/log/cloud-init-output.log
+set +xv
 ROOT_TOKEN=`jq -r .root_token /home/vault/_vaultSetup/keys.json`
 
 if [ -z "$ROOT_TOKEN" ]
@@ -24,6 +28,8 @@ fi
 cat << EOF >> /etc/profile.d/vault.sh
 export VAULT_TOKEN=$ROOT_TOKEN
 EOF
+# Re-enable trace logging
+set -xv
 
 
 # Install the Vault license and deletes the license file
@@ -40,9 +46,6 @@ else
 fi
 }
 
-# Wait for Vault to get Initialized with KMS
-sleep 10
-
 # Check if Vault is ready for being licensed
 while true 
 do 
@@ -53,12 +56,12 @@ do
     then
       echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Installing Vault license via /sys/license endpoint"
       install_vault_license $ROOT_TOKEN
-      break 2
+      break
     # If autoloading license is used, break from the loop
     elif [[ $(curl -X GET -LI -H "X-Vault-Token: $ROOT_TOKEN" -o /dev/null -w '%%{http_code}' -s https://127.0.0.1:8200/v1/sys/license/status) =~ (200) ]]
     then
       echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Vault is using autolicensing"
-      break 2
+      break
     fi
   echo "$(date +"%A, %b %d, %Y %H:%M:%S") - Vault is not ready yet !"
   sleep 1

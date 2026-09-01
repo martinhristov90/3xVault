@@ -15,7 +15,7 @@ apt:
   sources:
     hashicorp.list:
       source: "deb [arch=amd64] https://apt.releases.hashicorp.com $RELEASE main"
-      keyid: A621E701
+      keyid: 798AEC654E5C15428C8E42EEAA16FCBCA621E701
 
 # Installing vault enterprise, jq, terraform and awscli
 packages:
@@ -24,8 +24,8 @@ packages:
   - terraform
   - awscli
 
-package_upgrade: false
 package_update: true
+package_upgrade: false
 
 # Adding the new hostname to /etc/hosts
 manage_etc_hosts: true

@@ -13,10 +13,12 @@ write_files:
     permissions: '0600'
   - path: /home/vault/_vaultSetup/license.hclic
     content: ${vault_license}
-    permissions: '0644'
+    owner: vault:vault
+    permissions: '0600'
   - path: /home/vault/_vaultSetup/license.json
     content: |
       {
         "text": "${vault_license_legacy}"
       }
-    permissions: '0644'
+    owner: vault:vault
+    permissions: '0600'

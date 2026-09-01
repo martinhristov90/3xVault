@@ -9,7 +9,7 @@ cluster_name =  "cluster-${region}"
 raw_storage_endpoint = true
 
 #mlock = true
-#This has to be explicitly set for Vault 1.20.x and later.
+# disable_mlock = false means mlock IS active (memory will be locked, preventing swap)
 disable_mlock = false
 
 # Setting log level
@@ -47,6 +47,7 @@ EOF
 
 sudo chown -R vault:vault /etc/vault.d
 sudo chmod -R 0644 /etc/vault.d/*
+sudo chmod 0640 /etc/vault.d/tls.key
 
 cat << EOF > /etc/profile.d/vault.sh
 export VAULT_ADDR=https://127.0.0.1:8200

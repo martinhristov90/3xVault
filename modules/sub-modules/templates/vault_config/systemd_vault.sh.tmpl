@@ -9,6 +9,8 @@ Documentation=https://www.vaultproject.io/docs/
 Requires=network-online.target
 After=network-online.target
 ConditionFileNotEmpty=/etc/vault.d/vault.hcl
+StartLimitInterval=30s
+StartLimitBurst=3
 
 [Service]
 User=vault
@@ -22,20 +24,16 @@ AmbientCapabilities=CAP_IPC_LOCK
 CapabilityBoundingSet=CAP_SYSLOG CAP_IPC_LOCK
 NoNewPrivileges=yes
 ExecStart=/usr/bin/vault server -config=/etc/vault.d/vault.hcl
-ExecReload=/bin/kill --signal HUP $MAINPID
+ExecReload=/bin/kill --signal HUP \$MAINPID
 KillMode=process
 KillSignal=SIGINT
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30
-StartLimitInterval=60
-StartLimitBurst=3
 LimitNOFILE=65536
 LimitMEMLOCK=infinity
-StartLimitInterval=30s
-StartLimitBurst=3
-# Adding VAULT_LICENSE_PATH environment in case newer version of Vault > 1.8, so autoloading license can be provided. In case older version of Vault is used < 1.8 the VAULT_LICENSE_PATH env var has not meaning
-Environment="VAULT_LICENSE_PATH=/home/vault/_vaultSetup/license.hclic"
+# Passing the license string directly via VAULT_LICENSE so Vault can autoload it without relying on file ownership
+Environment="VAULT_LICENSE=${vault_license}"
 
 [Install]
 WantedBy=multi-user.target
@@ -43,5 +41,10 @@ EOF
 
 sudo systemctl daemon-reload
 
-sudo systemctl stop vault
-sudo systemctl start vault
+# Ensure the license directory exists and is owned by vault before Vault starts.
+# cloud-init write_files (which deposits license.hclic here) runs before this script
+# but creates any missing parent directories as root, so we fix ownership now.
+mkdir -p /home/vault/_vaultSetup
+chown -R vault:vault /home/vault/_vaultSetup
+
+sudo systemctl restart vault
