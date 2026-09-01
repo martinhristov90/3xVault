@@ -121,4 +121,7 @@ module "inter_vpc_peering" {
 | <a name="output_vault_cluster_ap_public_ips"></a> [vault\_cluster\_ap\_public\_ips](#output\_vault\_cluster\_ap\_public\_ips) | Prints public IPs for the nodes in the AP cluster |
 | <a name="output_vault_cluster_eu_public_ips"></a> [vault\_cluster\_eu\_public\_ips](#output\_vault\_cluster\_eu\_public\_ips) | Prints public IPs for the nodes in the EU cluster |
 | <a name="output_vault_cluster_us_public_ips"></a> [vault\_cluster\_us\_public\_ips](#output\_vault\_cluster\_us\_public\_ips) | Prints public IPs for the nodes in the US cluster |
+| <a name="output_z_ssh_commands_ap"></a> [z\_ssh\_commands\_ap](#output\_z\_ssh\_commands\_ap) | Ready-to-run SSH commands for every node in the AP cluster |
+| <a name="output_z_ssh_commands_eu"></a> [z\_ssh\_commands\_eu](#output\_z\_ssh\_commands\_eu) | Ready-to-run SSH commands for every node in the EU cluster |
+| <a name="output_z_ssh_commands_us"></a> [z\_ssh\_commands\_us](#output\_z\_ssh\_commands\_us) | Ready-to-run SSH commands for every node in the US cluster |
 <!-- END_TF_DOCS -->
