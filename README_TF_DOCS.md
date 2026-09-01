@@ -90,12 +90,12 @@ module "inter_vpc_peering" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~>1.16.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.67.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.62.0 |
+| <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | ~> 2.4.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2.9.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | ~> 3.3.1 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.9.0 |
-| <a name="requirement_template"></a> [template](#requirement\_template) | ~> 2.4.0 |
-| <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 3.4.0 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 4.4.0 |
 
 ## Providers
 
