@@ -13,10 +13,12 @@ data "cloudinit_config" "myhost" {
       vault_version = var.vault_version
     })
   }
-  # Fixing Systemd Unit file because of "Unknown lvalue 'StartLimitIntervalSec' in section 'Unit'" and providing VAULT_LICENSE_PATH env var for license autoloading
+  # Fixing Systemd Unit file because of "Unknown lvalue 'StartLimitIntervalSec' in section 'Unit'" and providing VAULT_LICENSE env var for license autoloading
   part {
     content_type = "text/x-shellscript"
-    content      = file("${path.module}/../templates/vault_config/systemd_vault.sh.tmpl")
+    content = templatefile("${path.module}/../templates/vault_config/systemd_vault.sh.tmpl", {
+      vault_license = var.vault_license
+    })
   }
   # Vault config
   part {
@@ -26,10 +28,9 @@ data "cloudinit_config" "myhost" {
       region     = var.region
       log_level  = var.log_level
       node_id    = "vault-${var.region}-${each.key}-${var.random_id}"
-      join_to    = cidrhost(data.aws_subnet.subnets[element(tolist(local.availability_zones_sliced), 0)].cidr_block, 5)
     })
   }
-  # Uploading the Vault TLS cert and private key for the listner and license for legacy licensing and autoload license
+  # Uploading the Vault TLS cert and private key for the listener and license for legacy licensing and autoload license
   part {
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/../templates/vault_config/tls_cert_and_license.yml.tmpl", {
@@ -55,7 +56,7 @@ data "cloudinit_config" "myhost" {
   }
   # Provides host keys for the EC2
   part {
-    content_type = "text_cloud-config"
+    content_type = "text/cloud-config"
     content = templatefile("${path.module}/../templates/cloud_init_templates/cloud-config-ssh-keys.yml.tmpl", {
       keys = [
         for k in tls_private_key.host[*] : {
@@ -68,7 +69,7 @@ data "cloudinit_config" "myhost" {
       ]
     })
   }
-  # Provides local TF configation at /home/ubuntu/_AWS_TF/main.tf path for active node, located in `1a` AZ, for example `vault-eu-west-1-eu-west-1a-sensible-termite` node  
+  # Provides local TF configuration at /home/ubuntu/_AWS_TF/main.tf path for active node, located in `1a` AZ, for example `vault-eu-west-1-eu-west-1a-sensible-termite` node
   part {
     content_type = "text/x-shellscript"
     content = each.key == local.first_subnet_host ? templatefile("${path.module}/../templates/local_terraform_config/local_terraform.sh.tmpl", {
@@ -78,7 +79,7 @@ data "cloudinit_config" "myhost" {
       vpc_id       = aws_vpc.vpc.id
       demouser_arn = data.aws_iam_policy.demouser.arn               #Specifies permission boundary for IAM 
       demorole_arn = aws_iam_role.vault_secret_engine_demo_role.arn #Specifies ARN of demorole for AWS secrets engine to test `assume_type`
-    }) : file("${path.module}/../templates/vault_config/join_license.yml.tmpl")
+    }) : "#!/usr/bin/env bash\n# follower node: local TF config not needed\n"
   }
 }
 

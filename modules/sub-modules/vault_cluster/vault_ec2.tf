@@ -21,8 +21,15 @@ resource "aws_instance" "vault" {
   tags = {
     Name = "vault-${var.region}-${each.key}-${var.random_id}"
   }
-  # Provisioning Vault
-  user_data = data.cloudinit_config.myhost[each.key].rendered
+  # Provisioning Vault.
+  # user_data_base64 is used instead of user_data because the cloudinit_config data source
+  # renders a gzip+base64-encoded blob (gzip=true, base64_encode=true in cloud_init.tf).
+  # The user_data attribute validates the value as a plain string and enforces a 16,384-character
+  # limit on that string, which the base64 representation of the compressed payload exceeds.
+  # user_data_base64 accepts a pre-encoded base64 value and passes it directly to the EC2 API,
+  # bypassing the string-length check. AWS still enforces ≤16 KiB on the raw (pre-base64) payload,
+  # which the gzip-compressed cloud-init config satisfies.
+  user_data_base64 = data.cloudinit_config.myhost[each.key].rendered
 }
 
 # Getting the AWS account id
