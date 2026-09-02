@@ -3,8 +3,8 @@ resource "aws_vpc_peering_connection" "peering_source_to_dr" {
 
   provider = aws.hq_provider
 
-  vpc_id      = element(tolist(data.aws_vpcs.vpc_id_hq_region.ids), 0)
-  peer_vpc_id = element(tolist(data.aws_vpcs.vpc_id_dr_region.ids), 0)
+  vpc_id      = one(data.aws_vpcs.vpc_id_hq_region.ids)
+  peer_vpc_id = one(data.aws_vpcs.vpc_id_dr_region.ids)
   peer_region = local.dr_vault_region
   auto_accept = false
 
@@ -57,8 +57,8 @@ resource "aws_vpc_peering_connection" "peering_source_to_pr" {
 
   provider = aws.hq_provider
 
-  vpc_id      = element(tolist(data.aws_vpcs.vpc_id_hq_region.ids), 0)
-  peer_vpc_id = element(tolist(data.aws_vpcs.vpc_id_pr_region.ids), 0)
+  vpc_id      = one(data.aws_vpcs.vpc_id_hq_region.ids)
+  peer_vpc_id = one(data.aws_vpcs.vpc_id_pr_region.ids)
   peer_region = local.pr_vault_region
   auto_accept = false
 
@@ -111,8 +111,8 @@ resource "aws_vpc_peering_connection" "peering_dr_to_pr" {
 
   provider = aws.dr_provider
 
-  vpc_id      = element(tolist(data.aws_vpcs.vpc_id_dr_region.ids), 0)
-  peer_vpc_id = element(tolist(data.aws_vpcs.vpc_id_pr_region.ids), 0)
+  vpc_id      = one(data.aws_vpcs.vpc_id_dr_region.ids)
+  peer_vpc_id = one(data.aws_vpcs.vpc_id_pr_region.ids)
   peer_region = local.pr_vault_region
   auto_accept = false
 

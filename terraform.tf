@@ -3,28 +3,28 @@ terraform {
 
   required_providers {
     aws = {
-      version = "~> 4.67.0"
       source  = "hashicorp/aws"
+      version = "~> 6.62.0"
     }
     null = {
-      version = "~> 3.3.1"
       source  = "hashicorp/null"
+      version = "~> 3.3.1"
     }
     random = {
-      version = "~> 3.9.0"
       source  = "hashicorp/random"
+      version = "~> 3.9.0"
     }
     tls = {
-      version = "~> 3.4.0"
       source  = "hashicorp/tls"
+      version = "~> 4.4.0"
     }
-    template = {
-      version = "~> 2.4.0"
+    cloudinit = {
       source  = "hashicorp/cloudinit"
+      version = "~> 2.4.0"
     }
     local = {
-      version = "~> 2.9.0"
       source  = "hashicorp/local"
+      version = "~> 2.9.0"
     }
   }
 }

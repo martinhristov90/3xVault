@@ -21,16 +21,19 @@ variable "log_level" {
 
 variable "vault_common_ca_cert" {
   type        = string
+  sensitive   = true
   description = "CA certificate to sign Vault server certificates"
 }
 
 variable "vault_common_ca_private_key" {
   type        = string
-  description = "CA private used to sign Vault server certificates"
+  sensitive   = true
+  description = "CA private key used to sign Vault server certificates"
 }
 
 variable "vault_license" {
   type        = string
+  sensitive   = true
   description = "Vault license"
 
   validation {

@@ -8,12 +8,12 @@ data "aws_ami" "ubuntu" {
   # Use this image (official Ubuntu) if var.use_private_image is false
   count = var.use_private_image ? 0 : 1
 
-  most_recent = "true"
-  owners      = ["amazon"]
+  most_recent = true
+  owners      = ["099720109477"] # Canonical's official AWS account ID
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-*"]
   }
 
   filter {

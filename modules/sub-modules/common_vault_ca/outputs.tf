@@ -1,5 +1,6 @@
 output "common_ca_private_key" {
   value       = tls_private_key.private_key_vault_ca.private_key_pem
+  sensitive   = true
   description = "Private key of CA in PEM"
 }
 
