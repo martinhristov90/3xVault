@@ -73,11 +73,17 @@ data "cloudinit_config" "myhost" {
   part {
     content_type = "text/x-shellscript"
     content = each.key == local.first_subnet_host ? templatefile("${path.module}/../templates/local_terraform_config/local_terraform.sh.tmpl", {
-      random_id    = var.random_id
-      region       = var.region
-      role         = aws_iam_role.vault_server_role # Using the instance IAM role name inside the template, so no `role=` flag should be specified when doing `vault login -method=aws`. The role is automatically filled out from the instance profile name. If AWS auth method role name is different, `vault login -method=aws role=NAME_OF_THE_ROLE` should be used.
+      random_id = var.random_id
+      region    = var.region
+      # Pass only the two attributes used in the template to avoid propagating deprecation marks
+      # carried by the full aws_iam_role object (inline_policy, managed_policy_arns), which cause
+      # templatefile to fail its consistency check.
+      role = {
+        name = aws_iam_role.vault_server_role.name # No `role=` flag needed with `vault login -method=aws`; role is inferred from the instance profile name.
+        arn  = aws_iam_role.vault_server_role.arn
+      }
       vpc_id       = aws_vpc.vpc.id
-      demouser_arn = data.aws_iam_policy.demouser.arn               #Specifies permission boundary for IAM 
+      demouser_arn = data.aws_iam_policy.demouser.arn               #Specifies permission boundary for IAM
       demorole_arn = aws_iam_role.vault_secret_engine_demo_role.arn #Specifies ARN of demorole for AWS secrets engine to test `assume_type`
     }) : "#!/usr/bin/env bash\n# follower node: local TF config not needed\n"
   }
