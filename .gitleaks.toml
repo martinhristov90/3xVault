@@ -22,6 +22,8 @@ paths = [
   '''go\.mod''',
   '''package-lock\.json''',
   '''yarn\.lock''',
+  # HashiCorp public GPG key embedded in cloud-init template for apt repo signing
+  '''modules/sub-modules/templates/cloud_init_templates/cloud-config\.yml''',
 ]
 
 # Regexes to ignore
